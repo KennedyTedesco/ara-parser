@@ -122,6 +122,21 @@ impl Node for TypeTemplateGroupDefinition {
     }
 }
 
+impl std::fmt::Display for TemplateGroupDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "<{}>",
+            self.members
+                .inner
+                .iter()
+                .map(|type_definition| { type_definition.to_string() })
+                .collect::<Vec<String>>()
+                .join(", ")
+        )
+    }
+}
+
 impl std::fmt::Display for TypeTemplateGroupDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
@@ -130,9 +145,173 @@ impl std::fmt::Display for TypeTemplateGroupDefinition {
             self.members
                 .inner
                 .iter()
-                .map(|s| { s.to_string() })
+                .map(|type_definition| { type_definition.to_string() })
                 .collect::<Vec<String>>()
                 .join(", ")
         )
+    }
+}
+
+impl std::fmt::Display for TemplateDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.variance {
+            TemplateDefinitionVariance::Covariance(_) => write!(f, "+")?,
+            TemplateDefinitionVariance::Invaraint => {}
+        }
+
+        write!(f, "{}", self.name)?;
+
+        match &self.constraint {
+            TemplateDefinitionTypeConstraint::SubType(k, t) => {
+                write!(f, " {k} {t}")?;
+            }
+            TemplateDefinitionTypeConstraint::None => {}
+        }
+
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::identifier::TemplatedIdentifier;
+
+    #[test]
+    fn test_template_definition_display() {
+        let template_definition = TemplateDefinition {
+            variance: TemplateDefinitionVariance::Covariance(0),
+            name: Identifier {
+                position: 1,
+                value: ByteString::from("T"),
+            },
+            constraint: TemplateDefinitionTypeConstraint::SubType(
+                Keyword {
+                    value: ByteString::from("as"),
+                    position: 2,
+                },
+                TypeDefinition::Identifier(TemplatedIdentifier {
+                    name: Identifier {
+                        position: 3,
+                        value: ByteString::from("object"),
+                    },
+                    templates: None,
+                }),
+            ),
+        };
+
+        assert_eq!(template_definition.to_string(), "+T as object");
+
+        let template_definition = TemplateDefinition {
+            variance: TemplateDefinitionVariance::Invaraint,
+            name: Identifier {
+                position: 1,
+                value: ByteString::from("U"),
+            },
+            constraint: TemplateDefinitionTypeConstraint::SubType(
+                Keyword {
+                    value: ByteString::from("as"),
+                    position: 2,
+                },
+                TypeDefinition::Identifier(TemplatedIdentifier {
+                    name: Identifier {
+                        position: 3,
+                        value: ByteString::from("IFoo"),
+                    },
+                    templates: None,
+                }),
+            ),
+        };
+
+        assert_eq!(template_definition.to_string(), "U as IFoo");
+    }
+
+    #[test]
+    fn test_template_group_definition_display() {
+        let template_group_definition = TemplateGroupDefinition {
+            comments: CommentGroup { comments: vec![] },
+            less_than: 0,
+            members: CommaSeparated {
+                inner: vec![
+                    TemplateDefinition {
+                        variance: TemplateDefinitionVariance::Covariance(0),
+                        name: Identifier {
+                            position: 1,
+                            value: ByteString::from("T"),
+                        },
+                        constraint: TemplateDefinitionTypeConstraint::SubType(
+                            Keyword {
+                                value: ByteString::from("as"),
+                                position: 2,
+                            },
+                            TypeDefinition::Identifier(TemplatedIdentifier {
+                                name: Identifier {
+                                    position: 3,
+                                    value: ByteString::from("object"),
+                                },
+                                templates: None,
+                            }),
+                        ),
+                    },
+                    TemplateDefinition {
+                        variance: TemplateDefinitionVariance::Invaraint,
+                        name: Identifier {
+                            position: 1,
+                            value: ByteString::from("U"),
+                        },
+                        constraint: TemplateDefinitionTypeConstraint::SubType(
+                            Keyword {
+                                value: ByteString::from("as"),
+                                position: 2,
+                            },
+                            TypeDefinition::Identifier(TemplatedIdentifier {
+                                name: Identifier {
+                                    position: 3,
+                                    value: ByteString::from("IFoo"),
+                                },
+                                templates: None,
+                            }),
+                        ),
+                    },
+                ],
+                commas: vec![],
+            },
+            greater_than: 4,
+        };
+
+        assert_eq!(
+            template_group_definition.to_string(),
+            "<+T as object, U as IFoo>"
+        );
+
+        let template_group_definition = TemplateGroupDefinition {
+            comments: CommentGroup { comments: vec![] },
+            less_than: 0,
+            members: CommaSeparated {
+                inner: vec![
+                    TemplateDefinition {
+                        variance: TemplateDefinitionVariance::Invaraint,
+                        name: Identifier {
+                            position: 1,
+                            value: ByteString::from("T"),
+                        },
+                        constraint: TemplateDefinitionTypeConstraint::None,
+                    },
+                    TemplateDefinition {
+                        variance: TemplateDefinitionVariance::Invaraint,
+                        name: Identifier {
+                            position: 1,
+                            value: ByteString::from("U"),
+                        },
+                        constraint: TemplateDefinitionTypeConstraint::None,
+                    },
+                ],
+                commas: vec![],
+            },
+            greater_than: 4,
+        };
+
+        assert_eq!(template_group_definition.to_string(), "<T, U>");
     }
 }
