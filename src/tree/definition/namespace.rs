@@ -67,6 +67,6 @@ mod tests {
             definitions: vec![],
         };
 
-        assert_eq!("namespace Foo\\Bar;", format!("{namespace_definition}"));
+        assert_eq!(namespace_definition.to_string(), "namespace Foo\\Bar;");
     }
 }

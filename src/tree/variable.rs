@@ -49,6 +49,6 @@ mod tests {
             name: ByteString::from("foo"),
         };
 
-        assert_eq!(format!("{variable}"), "$foo");
+        assert_eq!(variable.to_string(), "$foo");
     }
 }

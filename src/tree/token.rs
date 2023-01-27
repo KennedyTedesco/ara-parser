@@ -57,6 +57,6 @@ mod tests {
     fn test_keyword_display() {
         let keyword = Keyword::new(ByteString::from("iterable"), 0);
 
-        assert_eq!(format!("{keyword}"), "iterable");
+        assert_eq!(keyword.to_string(), "iterable");
     }
 }

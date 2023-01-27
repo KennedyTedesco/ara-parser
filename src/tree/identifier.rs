@@ -102,7 +102,7 @@ mod tests {
             value: ByteString::from("Foo"),
         };
 
-        assert_eq!(format!("{identifier}"), "Foo");
+        assert_eq!(identifier.to_string(), "Foo");
     }
 
     #[test]
@@ -115,7 +115,7 @@ mod tests {
             templates: None,
         };
 
-        assert_eq!(format!("{identifier}"), "Foo");
+        assert_eq!(identifier.to_string(), "Foo");
 
         let identifier = TemplatedIdentifier {
             name: Identifier {
@@ -135,6 +135,6 @@ mod tests {
             }),
         };
 
-        assert_eq!(format!("{identifier}"), "Foo<i64>");
+        assert_eq!(identifier.to_string(), "Foo<i64>");
     }
 }
