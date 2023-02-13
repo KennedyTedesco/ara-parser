@@ -1,3 +1,5 @@
+use bincode::Decode;
+use bincode::Encode;
 use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
@@ -10,18 +12,18 @@ use crate::tree::utils::CommaSeparated;
 use crate::tree::variable::Variable;
 use crate::tree::Node;
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct IfStatement {
     pub comments: CommentGroup,
     pub r#if: Keyword,
-    pub condition: Expression,
+    pub conditions: CommaSeparated<Expression>,
     pub block: BlockStatement,
     pub elseifs: Vec<IfElseIfStatement>,
     pub r#else: Option<IfElseStatement>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct IfElseIfStatement {
     pub comments: CommentGroup,
@@ -30,7 +32,7 @@ pub struct IfElseIfStatement {
     pub block: BlockStatement,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct IfElseStatement {
     pub comments: CommentGroup,
@@ -38,14 +40,14 @@ pub struct IfElseStatement {
     pub block: IfElseBlockStatement,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum IfElseBlockStatement {
     If(Box<IfStatement>),
     Block(BlockStatement),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct UsingStatement {
     pub comments: CommentGroup,
@@ -55,7 +57,7 @@ pub struct UsingStatement {
     pub block: BlockStatement,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct UsingAssignmentStatement {
     pub comments: CommentGroup,
@@ -64,7 +66,7 @@ pub struct UsingAssignmentStatement {
     pub expression: Expression,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct UsingIfClauseStatement {
     pub comments: CommentGroup,
@@ -86,7 +88,12 @@ impl Node for IfStatement {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        let mut children: Vec<&dyn Node> = vec![&self.r#if, &self.condition, &self.block];
+        let mut children: Vec<&dyn Node> = vec![&self.r#if, &self.block];
+
+        for condition in &self.conditions.inner {
+            children.push(condition);
+        }
+
         for elseif in &self.elseifs {
             children.push(elseif);
         }

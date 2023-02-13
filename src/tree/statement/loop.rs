@@ -1,3 +1,5 @@
+use bincode::Decode;
+use bincode::Encode;
 use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
@@ -11,7 +13,7 @@ use crate::tree::utils::CommaSeparated;
 use crate::tree::variable::Variable;
 use crate::tree::Node;
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct ForeachStatement {
     pub comments: CommentGroup,
@@ -22,7 +24,7 @@ pub struct ForeachStatement {
     pub else_block: Option<BlockStatement>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum ForeachIteratorStatement {
     Value {
@@ -55,7 +57,7 @@ pub enum ForeachIteratorStatement {
     },
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct ForStatement {
     pub comments: CommentGroup,
@@ -64,7 +66,7 @@ pub struct ForStatement {
     pub block: BlockStatement,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum ForIteratorStatement {
     Standalone {
@@ -85,27 +87,27 @@ pub enum ForIteratorStatement {
     },
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct DoWhileStatement {
     pub comments: CommentGroup,
     pub r#do: Keyword,
     pub block: BlockStatement,
     pub r#while: Keyword,
-    pub condition: Expression,
+    pub conditions: CommaSeparated<Expression>,
     pub semicolon: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct WhileStatement {
     pub comments: CommentGroup,
     pub r#while: Keyword,
-    pub condition: Expression,
+    pub conditions: CommaSeparated<Expression>,
     pub block: BlockStatement,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct BreakStatement {
     pub comments: CommentGroup,
@@ -114,7 +116,7 @@ pub struct BreakStatement {
     pub semicolon: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Deserialize, Serialize, Encode, Decode, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct ContinueStatement {
     pub comments: CommentGroup,
@@ -372,7 +374,13 @@ impl Node for DoWhileStatement {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        vec![&self.r#do, &self.block, &self.r#while, &self.condition]
+        let mut children: Vec<&dyn Node> = vec![&self.r#do, &self.block, &self.r#while];
+
+        for condition in &self.conditions.inner {
+            children.push(condition);
+        }
+
+        children
     }
 
     fn get_description(&self) -> String {
@@ -394,7 +402,13 @@ impl Node for WhileStatement {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        vec![&self.r#while, &self.condition, &self.block]
+        let mut children: Vec<&dyn Node> = vec![&self.r#while, &self.block];
+
+        for condition in &self.conditions.inner {
+            children.push(condition);
+        }
+
+        children
     }
 
     fn get_description(&self) -> String {
