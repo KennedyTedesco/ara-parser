@@ -308,6 +308,17 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_literal_display() {
+        let literal = Literal::String(LiteralString {
+            comments: CommentGroup { comments: vec![] },
+            value: ByteString::from("\"foo\""),
+            position: 0,
+        });
+
+        assert_eq!(literal.to_string(), "\"foo\"");
+    }
+
+    #[test]
     fn test_string_display() {
         let node = LiteralString {
             comments: CommentGroup { comments: vec![] },

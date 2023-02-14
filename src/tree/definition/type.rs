@@ -491,19 +491,7 @@ mod tests {
     use super::*;
     use crate::lexer::byte_string::ByteString;
     use crate::tree::comment::CommentGroup;
-    use crate::tree::expression::literal::LiteralString;
     use crate::tree::identifier::Identifier;
-
-    #[test]
-    fn test_literal_display() {
-        let literal = Literal::String(LiteralString {
-            comments: CommentGroup { comments: vec![] },
-            value: ByteString::from("\"foo\""),
-            position: 0,
-        });
-
-        assert_eq!(literal.to_string(), "\"foo\"");
-    }
 
     #[test]
     fn test_type_alias_definition_display() {
