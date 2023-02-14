@@ -253,3 +253,107 @@ impl Node for LiteralFalse {
         "literal false expression".to_string()
     }
 }
+
+impl std::fmt::Display for LiteralString {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+impl std::fmt::Display for LiteralInteger {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+impl std::fmt::Display for LiteralFloat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+impl std::fmt::Display for LiteralNull {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "null")
+    }
+}
+
+impl std::fmt::Display for LiteralTrue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "true")
+    }
+}
+
+impl std::fmt::Display for LiteralFalse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "false")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_string_display() {
+        let node = LiteralString {
+            comments: CommentGroup { comments: vec![] },
+            position: 0,
+            value: ByteString::from("foo"),
+        };
+
+        assert_eq!(node.to_string(), "foo");
+    }
+
+    #[test]
+    fn test_integer_display() {
+        let node = LiteralInteger {
+            comments: CommentGroup { comments: vec![] },
+            position: 0,
+            value: ByteString::from("123"),
+        };
+
+        assert_eq!(node.to_string(), "123");
+    }
+
+    #[test]
+    fn test_float_display() {
+        let node = LiteralFloat {
+            comments: CommentGroup { comments: vec![] },
+            position: 0,
+            value: ByteString::from("3.14"),
+        };
+
+        assert_eq!(node.to_string(), "3.14");
+    }
+
+    #[test]
+    fn test_null_display() {
+        let node = LiteralNull {
+            comments: CommentGroup { comments: vec![] },
+            null: Keyword::new(ByteString::from("null"), 0),
+        };
+
+        assert_eq!(node.to_string(), "null");
+    }
+
+    #[test]
+    fn test_true_display() {
+        let node = LiteralTrue {
+            comments: CommentGroup { comments: vec![] },
+            r#true: Keyword::new(ByteString::from("true"), 0),
+        };
+
+        assert_eq!(node.to_string(), "true");
+    }
+
+    #[test]
+    fn test_false_display() {
+        let node = LiteralFalse {
+            comments: CommentGroup { comments: vec![] },
+            r#false: Keyword::new(ByteString::from("false"), 0),
+        };
+
+        assert_eq!(node.to_string(), "false");
+    }
+}
