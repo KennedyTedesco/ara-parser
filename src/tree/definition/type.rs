@@ -353,7 +353,6 @@ impl Node for TypeDefinition {
 
     fn get_description(&self) -> String {
         match &self {
-            // match &self and print all the variants:
             Self::Identifier(_) => "identifier type definition".to_string(),
             Self::Union(_) => "union type definition".to_string(),
             Self::Intersection(_) => "intersection type definition".to_string(),
@@ -378,6 +377,17 @@ impl Node for TypeDefinition {
             Self::Tuple { .. } => "tuple type definition".to_string(),
             Self::Parenthesized { .. } => "parenthesized type definition".to_string(),
         }
+    }
+}
+
+impl std::fmt::Display for TypeAliasDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "type {name} = {type_definition};",
+            name = self.name,
+            type_definition = self.type_definition
+        )
     }
 }
 
@@ -407,33 +417,10 @@ impl std::fmt::Display for TypeDefinition {
             Self::Void(_) => write!(f, "void"),
             Self::Never(_) => write!(f, "never"),
             Self::Boolean(_) => write!(f, "bool"),
-            Self::Literal(literal) => match literal {
-                Literal::Null(_) => write!(f, "null"),
-                Literal::False(_) => write!(f, "false"),
-                Literal::True(_) => write!(f, "true"),
-                Literal::Integer(inner) => write!(f, "{}", inner.value),
-                Literal::Float(inner) => write!(f, "{}", inner.value),
-                Literal::String(inner) => write!(f, "{}", inner.value),
-            },
-            Self::SignedInteger(signed) => match signed {
-                SignedIntegerTypeDefinition::Default(_) => write!(f, "int"),
-                SignedIntegerTypeDefinition::I128(_) => write!(f, "i128"),
-                SignedIntegerTypeDefinition::I64(_) => write!(f, "i64"),
-                SignedIntegerTypeDefinition::I32(_) => write!(f, "i32"),
-                SignedIntegerTypeDefinition::I16(_) => write!(f, "i16"),
-                SignedIntegerTypeDefinition::I8(_) => write!(f, "i8"),
-            },
-            Self::UnsignedInteger(unsigned) => match unsigned {
-                UnsignedIntegerTypeDefinition::Default(_) => write!(f, "uint"),
-                UnsignedIntegerTypeDefinition::U32(_) => write!(f, "u32"),
-                UnsignedIntegerTypeDefinition::U16(_) => write!(f, "u16"),
-                UnsignedIntegerTypeDefinition::U8(_) => write!(f, "u8"),
-            },
-            Self::FloatingPoint(floating) => match floating {
-                FloatingPointTypeDefinition::Default(_) => write!(f, "float"),
-                FloatingPointTypeDefinition::F64(_) => write!(f, "f64"),
-                FloatingPointTypeDefinition::F32(_) => write!(f, "f32"),
-            },
+            Self::Literal(literal) => write!(f, "{literal}"),
+            Self::SignedInteger(signed) => write!(f, "{signed}"),
+            Self::UnsignedInteger(unsigned) => write!(f, "{unsigned}"),
+            Self::FloatingPoint(floating) => write!(f, "{floating}"),
             Self::String(_) => write!(f, "string"),
             Self::Dict(_, template) => write!(f, "dict{template}"),
             Self::Vec(_, template) => write!(f, "vec{template}"),
@@ -462,5 +449,171 @@ impl std::fmt::Display for TypeDefinition {
                 write!(f, "({type_definition})")
             }
         }
+    }
+}
+
+impl std::fmt::Display for SignedIntegerTypeDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Default(_) => write!(f, "int"),
+            Self::I128(_) => write!(f, "i128"),
+            Self::I64(_) => write!(f, "i64"),
+            Self::I32(_) => write!(f, "i32"),
+            Self::I16(_) => write!(f, "i16"),
+            Self::I8(_) => write!(f, "i8"),
+        }
+    }
+}
+
+impl std::fmt::Display for UnsignedIntegerTypeDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Default(_) => write!(f, "uint"),
+            Self::U32(_) => write!(f, "u32"),
+            Self::U16(_) => write!(f, "u16"),
+            Self::U8(_) => write!(f, "u8"),
+        }
+    }
+}
+
+impl std::fmt::Display for FloatingPointTypeDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Default(_) => write!(f, "float"),
+            Self::F64(_) => write!(f, "f64"),
+            Self::F32(_) => write!(f, "f32"),
+        }
+    }
+}
+
+impl std::fmt::Display for Literal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Null(inner) => write!(f, "{}", inner),
+            Self::False(inner) => write!(f, "{}", inner),
+            Self::True(inner) => write!(f, "{}", inner),
+            Self::Integer(inner) => write!(f, "{}", inner),
+            Self::Float(inner) => write!(f, "{}", inner),
+            Self::String(inner) => write!(f, "{}", inner),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::comment::CommentGroup;
+    use crate::tree::expression::literal::LiteralString;
+    use crate::tree::identifier::Identifier;
+
+    #[test]
+    fn test_literal_display() {
+        let literal = Literal::String(LiteralString {
+            comments: CommentGroup { comments: vec![] },
+            value: ByteString::from("\"foo\""),
+            position: 0,
+        });
+
+        assert_eq!(literal.to_string(), "\"foo\"");
+    }
+
+    #[test]
+    fn test_type_alias_definition_display() {
+        let type_alias_definition = TypeAliasDefinition {
+            r#type: Keyword {
+                value: ByteString::from("type"),
+                position: 0,
+            },
+            name: TemplatedIdentifier {
+                name: Identifier {
+                    position: 0,
+                    value: ByteString::from("Foo"),
+                },
+                templates: None,
+            },
+            equals: 0,
+            type_definition: TypeDefinition::UnsignedInteger(UnsignedIntegerTypeDefinition::U32(
+                Keyword {
+                    value: ByteString::from("u32"),
+                    position: 0,
+                },
+            )),
+            semicolon: 0,
+        };
+
+        assert_eq!(type_alias_definition.to_string(), "type Foo = u32;");
+    }
+
+    #[test]
+    fn test_type_alias_definition_with_templates_display() {
+        let type_alias_definition = TypeAliasDefinition {
+            r#type: Keyword {
+                value: ByteString::from("type"),
+                position: 0,
+            },
+            name: TemplatedIdentifier {
+                name: Identifier {
+                    position: 0,
+                    value: ByteString::from("filter"),
+                },
+                templates: Some(TypeTemplateGroupDefinition {
+                    comments: CommentGroup { comments: vec![] },
+                    less_than: 0,
+                    members: CommaSeparated {
+                        inner: vec![TypeDefinition::Identifier(TemplatedIdentifier {
+                            name: Identifier {
+                                position: 3,
+                                value: ByteString::from("T"),
+                            },
+                            templates: None,
+                        })],
+                        commas: vec![],
+                    },
+                    greater_than: 0,
+                }),
+            },
+            equals: 0,
+            type_definition: TypeDefinition::Identifier(TemplatedIdentifier {
+                name: Identifier {
+                    position: 3,
+                    value: ByteString::from("Closure"),
+                },
+                templates: Some(TypeTemplateGroupDefinition {
+                    comments: CommentGroup { comments: vec![] },
+                    less_than: 0,
+                    members: CommaSeparated {
+                        inner: vec![
+                            TypeDefinition::Tuple {
+                                left_parenthesis: 0,
+                                type_definitions: CommaSeparated {
+                                    inner: vec![TypeDefinition::Identifier(TemplatedIdentifier {
+                                        name: Identifier {
+                                            position: 3,
+                                            value: ByteString::from("T"),
+                                        },
+                                        templates: None,
+                                    })],
+                                    commas: vec![],
+                                },
+                                right_parenthesis: 0,
+                            },
+                            TypeDefinition::Boolean(Keyword {
+                                value: ByteString::from("bool"),
+                                position: 0,
+                            }),
+                        ],
+                        commas: vec![0],
+                    },
+                    greater_than: 0,
+                }),
+            }),
+            semicolon: 0,
+        };
+
+        assert_eq!(
+            type_alias_definition.to_string(),
+            "type filter<T> = Closure<(T), bool>;"
+        );
     }
 }
