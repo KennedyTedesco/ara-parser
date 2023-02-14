@@ -254,6 +254,19 @@ impl Node for LiteralFalse {
     }
 }
 
+impl std::fmt::Display for Literal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Null(inner) => write!(f, "{}", inner),
+            Self::False(inner) => write!(f, "{}", inner),
+            Self::True(inner) => write!(f, "{}", inner),
+            Self::Integer(inner) => write!(f, "{}", inner),
+            Self::Float(inner) => write!(f, "{}", inner),
+            Self::String(inner) => write!(f, "{}", inner),
+        }
+    }
+}
+
 impl std::fmt::Display for LiteralString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
