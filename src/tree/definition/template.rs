@@ -154,23 +154,31 @@ impl std::fmt::Display for TypeTemplateGroupDefinition {
     }
 }
 
+impl std::fmt::Display for TemplateDefinitionVariance {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Covariance(_) => write!(f, "+"),
+            Self::Invaraint => write!(f, ""),
+        }
+    }
+}
+
+impl std::fmt::Display for TemplateDefinitionTypeConstraint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::SubType(k, t) => write!(f, " {k} {t}"),
+            Self::None => write!(f, ""),
+        }
+    }
+}
+
 impl std::fmt::Display for TemplateDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match &self.variance {
-            TemplateDefinitionVariance::Covariance(_) => write!(f, "+")?,
-            TemplateDefinitionVariance::Invaraint => {}
-        }
-
-        write!(f, "{}", self.name)?;
-
-        match &self.constraint {
-            TemplateDefinitionTypeConstraint::SubType(k, t) => {
-                write!(f, " {k} {t}")?;
-            }
-            TemplateDefinitionTypeConstraint::None => {}
-        }
-
-        Ok(())
+        Ok(write!(
+            f,
+            "{}{}{}",
+            &self.variance, self.name, &self.constraint
+        )?)
     }
 }
 
