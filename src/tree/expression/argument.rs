@@ -170,3 +170,61 @@ impl std::fmt::Display for ArgumentPlaceholderExpression {
         write!(f, "(...)")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::expression::literal::Literal::Integer;
+    use crate::tree::expression::literal::LiteralInteger;
+    use crate::tree::expression::Expression;
+    use crate::tree::identifier::Identifier;
+    use crate::tree::variable::Variable;
+
+    #[test]
+    fn test_argument_expression_display() {
+        let argument = ArgumentExpression::Value {
+            comments: CommentGroup { comments: vec![] },
+            value: Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("a"),
+            }),
+        };
+        assert_eq!(argument.to_string(), "$a");
+
+        let argument = ArgumentExpression::Spread {
+            comments: CommentGroup { comments: vec![] },
+            ellipsis: 0,
+            value: Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("a"),
+            }),
+        };
+        assert_eq!(argument.to_string(), "...$a");
+
+        let argument = ArgumentExpression::ReverseSpread {
+            comments: CommentGroup { comments: vec![] },
+            value: Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("a"),
+            }),
+            ellipsis: 0,
+        };
+        assert_eq!(argument.to_string(), "$a...");
+
+        let argument = ArgumentExpression::Named {
+            comments: CommentGroup { comments: vec![] },
+            name: Identifier {
+                position: 0,
+                value: ByteString::from("a"),
+            },
+            colon: 1,
+            value: Expression::Literal(Integer(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("1"),
+            })),
+        };
+        assert_eq!(argument.to_string(), "a: 1");
+    }
+}
