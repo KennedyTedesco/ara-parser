@@ -1970,10 +1970,10 @@ impl std::fmt::Display for LogicalOperationExpression {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match &self {
             Self::And { left, right, .. } => {
-                write!(f, "{} and {}", left, right)
+                write!(f, "{} && {}", left, right)
             }
             Self::Or { left, right, .. } => {
-                write!(f, "{} or {}", left, right)
+                write!(f, "{} || {}", left, right)
             }
             Self::Not { right, .. } => {
                 write!(f, "!{}", right)
@@ -3049,5 +3049,49 @@ mod tests {
         };
 
         assert_eq!(spaceship.to_string(), "$foo <=> $bar");
+    }
+
+    #[test]
+    fn test_logical_operation_expression_display() {
+        let logical_and = LogicalOperationExpression::And {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            double_ampersand: 0,
+        };
+
+        assert_eq!(logical_and.to_string(), "$foo && $bar");
+
+        let logical_or = LogicalOperationExpression::Or {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            double_pipe: 0,
+        };
+
+        assert_eq!(logical_or.to_string(), "$foo || $bar");
+
+        let logical_not = LogicalOperationExpression::Not {
+            comments: CommentGroup { comments: vec![] },
+            bang: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+        };
+
+        assert_eq!(logical_not.to_string(), "!$foo");
     }
 }
