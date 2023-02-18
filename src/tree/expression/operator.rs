@@ -2420,6 +2420,7 @@ impl std::fmt::Display for FunctionOperationExpression {
 mod tests {
     use super::*;
     use crate::lexer::byte_string::ByteString;
+    use crate::tree::definition::r#type::SignedIntegerTypeDefinition;
     use crate::tree::expression::literal::Literal::Integer;
     use crate::tree::expression::literal::LiteralInteger;
 
@@ -3276,5 +3277,68 @@ mod tests {
         };
 
         assert_eq!(implicit_short_ternary.to_string(), "$foo ? : $bar");
+    }
+
+    #[test]
+    fn test_type_operation_expression_display() {
+        let instance_of = TypeOperationExpression::Instanceof {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            instanceof: Keyword::new(ByteString::from("instanceof"), 0),
+            right: Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            },
+        };
+
+        assert_eq!(instance_of.to_string(), "$foo instanceof Foo");
+
+        let is = TypeOperationExpression::Is {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            is: Keyword::new(ByteString::from("is"), 0),
+            right: TypeDefinition::SignedInteger(SignedIntegerTypeDefinition::I64(Keyword::new(
+                ByteString::from("i64"),
+                0,
+            ))),
+        };
+
+        assert_eq!(is.to_string(), "$foo is i64");
+
+        let into = TypeOperationExpression::Into {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            into: Keyword::new(ByteString::from("into"), 0),
+            right: TypeDefinition::SignedInteger(SignedIntegerTypeDefinition::I64(Keyword::new(
+                ByteString::from("i64"),
+                0,
+            ))),
+        };
+
+        assert_eq!(into.to_string(), "$foo into i64");
+
+        let r#as = TypeOperationExpression::As {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            r#as: Keyword::new(ByteString::from("as"), 0),
+            right: TypeDefinition::SignedInteger(SignedIntegerTypeDefinition::I64(Keyword::new(
+                ByteString::from("i64"),
+                0,
+            ))),
+        };
+
+        assert_eq!(r#as.to_string(), "$foo as i64");
     }
 }
