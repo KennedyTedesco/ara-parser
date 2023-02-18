@@ -3390,4 +3390,18 @@ mod tests {
 
         assert_eq!(yield_from.to_string(), "yield from $foo");
     }
+
+    #[test]
+    fn test_exception_operation_expression_display() {
+        let throw = ExceptionOperationExpression::Throw {
+            comments: CommentGroup { comments: vec![] },
+            r#throw: Keyword::new(ByteString::from("throw"), 0),
+            value: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+        };
+
+        assert_eq!(throw.to_string(), "throw $foo");
+    }
 }
