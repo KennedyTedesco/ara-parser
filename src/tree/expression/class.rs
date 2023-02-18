@@ -67,7 +67,11 @@ impl Node for AnonymousClassExpression {
 
 impl std::fmt::Display for AnonymousClassExpression {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "class {}", self.arguments)?;
+        write!(f, "{}", self.class)?;
+
+        if !self.arguments.arguments.inner.is_empty() {
+            write!(f, "{}", self.arguments)?;
+        }
 
         if let Some(extends) = &self.extends {
             write!(f, " {}", extends)?;
@@ -156,7 +160,7 @@ mod tests {
 
         assert_eq!(
             anonymous_class.to_string(),
-            "class (1) extends Foo implements Bar, Baz { /* ... */ }"
+            "class(1) extends Foo implements Bar, Baz { /* ... */ }"
         );
     }
 }

@@ -2420,6 +2420,7 @@ impl std::fmt::Display for FunctionOperationExpression {
 mod tests {
     use super::*;
     use crate::lexer::byte_string::ByteString;
+    use crate::tree::definition::class::ClassDefinitionBody;
     use crate::tree::definition::r#type::SignedIntegerTypeDefinition;
     use crate::tree::expression::argument::ArgumentExpression;
     use crate::tree::expression::literal::Literal::Integer;
@@ -3551,5 +3552,190 @@ mod tests {
         });
 
         assert_eq!(variable.to_string(), "new $foo");
+    }
+
+    #[test]
+    fn test_class_operation_expression() {
+        let initialization = ClassOperationExpression::Initialization {
+            comments: CommentGroup { comments: vec![] },
+            new: Keyword::new(ByteString::from("new"), 0),
+            class: ClassOperationInitializationClassExpression::Identifier(Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            }),
+            generics: None,
+            arguments: ArgumentListExpression {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                arguments: CommaSeparated {
+                    inner: vec![ArgumentExpression::Value {
+                        comments: CommentGroup { comments: vec![] },
+                        value: Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("1"),
+                        })),
+                    }],
+                    commas: vec![],
+                },
+                right_parenthesis: 0,
+            },
+        };
+
+        assert_eq!(initialization.to_string(), "new Foo(1)");
+
+        let anonymous_initialization = ClassOperationExpression::AnonymousInitialization {
+            comments: CommentGroup { comments: vec![] },
+            new: Keyword::new(ByteString::from("new"), 0),
+            class: AnonymousClassExpression {
+                comments: CommentGroup { comments: vec![] },
+                attributes: vec![],
+                class: Keyword::new(ByteString::from("class"), 0),
+                arguments: ArgumentListExpression {
+                    comments: CommentGroup { comments: vec![] },
+                    left_parenthesis: 0,
+                    arguments: CommaSeparated {
+                        inner: vec![],
+                        commas: vec![],
+                    },
+                    right_parenthesis: 0,
+                },
+                extends: None,
+                implements: None,
+                body: ClassDefinitionBody {
+                    left_brace: 0,
+                    members: vec![],
+                    right_brace: 0,
+                },
+            },
+        };
+
+        assert_eq!(
+            anonymous_initialization.to_string(),
+            "new class { /* ... */ }"
+        );
+
+        let anonymous_initialization_with_argument =
+            ClassOperationExpression::AnonymousInitialization {
+                comments: CommentGroup { comments: vec![] },
+                new: Keyword::new(ByteString::from("new"), 0),
+                class: AnonymousClassExpression {
+                    comments: CommentGroup { comments: vec![] },
+                    attributes: vec![],
+                    class: Keyword::new(ByteString::from("class"), 0),
+                    arguments: ArgumentListExpression {
+                        comments: CommentGroup { comments: vec![] },
+                        left_parenthesis: 0,
+                        arguments: CommaSeparated {
+                            inner: vec![ArgumentExpression::Value {
+                                comments: CommentGroup { comments: vec![] },
+                                value: Expression::Literal(Integer(LiteralInteger {
+                                    comments: CommentGroup { comments: vec![] },
+                                    position: 0,
+                                    value: ByteString::from("1"),
+                                })),
+                            }],
+                            commas: vec![],
+                        },
+                        right_parenthesis: 0,
+                    },
+                    extends: None,
+                    implements: None,
+                    body: ClassDefinitionBody {
+                        left_brace: 0,
+                        members: vec![],
+                        right_brace: 0,
+                    },
+                },
+            };
+
+        assert_eq!(
+            anonymous_initialization_with_argument.to_string(),
+            "new class(1) { /* ... */ }"
+        );
+
+        let static_method_call = ClassOperationExpression::StaticMethodCall {
+            comments: CommentGroup { comments: vec![] },
+            class: Box::new(Expression::Identifier(Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            })),
+            double_colon: 0,
+            method: Identifier {
+                position: 0,
+                value: ByteString::from("bar"),
+            },
+            generics: None,
+            arguments: ArgumentListExpression {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                arguments: CommaSeparated {
+                    inner: vec![ArgumentExpression::Value {
+                        comments: CommentGroup { comments: vec![] },
+                        value: Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("1"),
+                        })),
+                    }],
+                    commas: vec![],
+                },
+                right_parenthesis: 0,
+            },
+        };
+
+        assert_eq!(static_method_call.to_string(), "Foo::bar(1)");
+
+        let static_method_closure = ClassOperationExpression::StaticMethodClosureCreation {
+            comments: CommentGroup { comments: vec![] },
+            class: Box::new(Expression::Identifier(Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            })),
+            double_colon: 0,
+            method: Identifier {
+                position: 0,
+                value: ByteString::from("bar"),
+            },
+            generics: None,
+            placeholder: ArgumentPlaceholderExpression {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                ellipsis: 0,
+                right_parenthesis: 0,
+            },
+        };
+
+        assert_eq!(static_method_closure.to_string(), "Foo::bar(...)");
+
+        let static_property_fetch = ClassOperationExpression::StaticPropertyFetch {
+            comments: CommentGroup { comments: vec![] },
+            class: Box::new(Expression::Identifier(Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            })),
+            double_colon: 0,
+            property: Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            },
+        };
+
+        assert_eq!(static_property_fetch.to_string(), "Foo::$bar");
+
+        let constant_fetch = ClassOperationExpression::ConstantFetch {
+            comments: CommentGroup { comments: vec![] },
+            class: Box::new(Expression::Identifier(Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            })),
+            double_colon: 0,
+            constant: Identifier {
+                position: 0,
+                value: ByteString::from("BAR"),
+            },
+        };
+
+        assert_eq!(constant_fetch.to_string(), "Foo::BAR");
     }
 }
