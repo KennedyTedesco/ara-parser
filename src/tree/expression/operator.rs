@@ -2420,6 +2420,8 @@ impl std::fmt::Display for FunctionOperationExpression {
 mod tests {
     use super::*;
     use crate::lexer::byte_string::ByteString;
+    use crate::tree::expression::literal::Literal::Integer;
+    use crate::tree::expression::literal::LiteralInteger;
 
     #[test]
     fn test_functional_operation_expression_display() {
@@ -3111,5 +3113,96 @@ mod tests {
         };
 
         assert_eq!(concat.to_string(), "$foo.$bar");
+    }
+
+    #[test]
+    fn test_array_operation_expression_display() {
+        let access = ArrayOperationExpression::Access {
+            comments: CommentGroup { comments: vec![] },
+            array: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            left_bracket: 0,
+            index: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            right_bracket: 0,
+        };
+
+        assert_eq!(access.to_string(), "$foo[$bar]");
+
+        let push = ArrayOperationExpression::Push {
+            comments: CommentGroup { comments: vec![] },
+            array: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            left_bracket: 0,
+            right_bracket: 0,
+        };
+
+        assert_eq!(push.to_string(), "$foo[]");
+
+        let unset = ArrayOperationExpression::Unset {
+            comments: CommentGroup { comments: vec![] },
+            unset: Keyword::new(ByteString::from("unset"), 0),
+            item: Box::new(Expression::ArrayOperation(
+                ArrayOperationExpression::Access {
+                    comments: CommentGroup { comments: vec![] },
+                    array: Box::new(Expression::Variable(Variable {
+                        position: 0,
+                        name: ByteString::from("foo"),
+                    })),
+                    left_bracket: 0,
+                    index: Box::new(Expression::Variable(Variable {
+                        position: 0,
+                        name: ByteString::from("bar"),
+                    })),
+                    right_bracket: 0,
+                },
+            )),
+        };
+
+        assert_eq!(unset.to_string(), "unset $foo[$bar]");
+
+        let isset = ArrayOperationExpression::Isset {
+            comments: CommentGroup { comments: vec![] },
+            isset: Keyword::new(ByteString::from("isset"), 0),
+            item: Box::new(Expression::ArrayOperation(
+                ArrayOperationExpression::Access {
+                    comments: CommentGroup { comments: vec![] },
+                    array: Box::new(Expression::Variable(Variable {
+                        position: 0,
+                        name: ByteString::from("foo"),
+                    })),
+                    left_bracket: 0,
+                    index: Box::new(Expression::Variable(Variable {
+                        position: 0,
+                        name: ByteString::from("bar"),
+                    })),
+                    right_bracket: 0,
+                },
+            )),
+        };
+
+        assert_eq!(isset.to_string(), "isset $foo[$bar]");
+
+        let r#in = ArrayOperationExpression::In {
+            comments: CommentGroup { comments: vec![] },
+            item: Box::new(Expression::Literal(Integer(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("1"),
+            }))),
+            r#in: Keyword::new(ByteString::from("in"), 0),
+            array: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+        };
+
+        assert_eq!(r#in.to_string(), "1 in $foo");
     }
 }
