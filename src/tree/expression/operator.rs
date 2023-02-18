@@ -3205,4 +3205,76 @@ mod tests {
 
         assert_eq!(r#in.to_string(), "1 in $foo");
     }
+
+    #[test]
+    fn test_coalesce_operation_expression_display() {
+        let coalesce = CoalesceOperationExpression::Coalesce {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            double_question: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(coalesce.to_string(), "$foo ?? $bar");
+    }
+
+    #[test]
+    fn test_ternary_operation_expression_display() {
+        let ternary = TernaryOperationExpression::Ternary {
+            comments: CommentGroup { comments: vec![] },
+            condition: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            question: 0,
+            if_true: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            colon: 0,
+            if_false: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("baz"),
+            })),
+        };
+
+        assert_eq!(ternary.to_string(), "$foo ? $bar : $baz");
+
+        let short_ternary = TernaryOperationExpression::ShortTernary {
+            comments: CommentGroup { comments: vec![] },
+            condition: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            if_false: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            question_colon: 0,
+        };
+
+        assert_eq!(short_ternary.to_string(), "$foo ?: $bar");
+
+        let implicit_short_ternary = TernaryOperationExpression::ImplicitShortTernary {
+            comments: CommentGroup { comments: vec![] },
+            condition: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            question: 0,
+            colon: 0,
+            if_false: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(implicit_short_ternary.to_string(), "$foo ? : $bar");
+    }
 }
