@@ -176,3 +176,40 @@ impl Node for InterfaceDefinitionMember {
         }
     }
 }
+
+impl std::fmt::Display for InterfaceDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {}", self.interface, self.name)?;
+
+        if let Some(templates) = &self.templates {
+            write!(f, "{}", templates)?;
+        }
+
+        if let Some(extends) = &self.extends {
+            write!(f, "{}", extends)?;
+        }
+
+        write!(f, "{}", self.body)
+    }
+}
+
+impl std::fmt::Display for InterfaceDefinitionExtends {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {}", self.extends, self.parents)
+    }
+}
+
+impl std::fmt::Display for InterfaceDefinitionBody {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, " {{ /* ... */ }}")
+    }
+}
+
+impl std::fmt::Display for InterfaceDefinitionMember {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            Self::Constant(constant) => write!(f, "{}", constant),
+            Self::Method(method) => write!(f, "{}", method),
+        }
+    }
+}
