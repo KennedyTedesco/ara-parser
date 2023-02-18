@@ -198,3 +198,47 @@ impl Node for AnonymousFunctionUseClauseVariableExpression {
         "anonymous function use clause variable expression".to_string()
     }
 }
+
+impl std::fmt::Display for ArrowFunctionExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(r#static) = &self.r#static {
+            write!(f, "{} ", r#static)?;
+        }
+        write!(
+            f,
+            "{} {}{} => {}",
+            self.r#fn, self.parameters, self.return_type, self.body
+        )
+    }
+}
+
+impl std::fmt::Display for AnonymousFunctionExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(r#static) = &self.r#static {
+            write!(f, "{} ", r#static)?;
+        }
+        write!(
+            f,
+            "{}{}{}",
+            self.function, self.parameters, self.return_type
+        )?;
+
+        if let Some(use_clause) = &self.use_clause {
+            write!(f, " {}", use_clause)?;
+        }
+
+        write!(f, " {}", self.body)
+    }
+}
+
+impl std::fmt::Display for AnonymousFunctionUseClauseExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} ({})", self.r#use, self.variables)
+    }
+}
+
+impl std::fmt::Display for AnonymousFunctionUseClauseVariableExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.variable)
+    }
+}
