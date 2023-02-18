@@ -60,3 +60,17 @@ impl Node for MagicConstant {
         }
     }
 }
+
+impl std::fmt::Display for MagicConstant {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            Self::Directory { value, .. }
+            | Self::File { value, .. }
+            | Self::Line { value, .. }
+            | Self::Class { value, .. }
+            | Self::Function { value, .. }
+            | Self::Method { value, .. }
+            | Self::Namespace { value, .. } => write!(f, "{}", value),
+        }
+    }
+}
