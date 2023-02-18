@@ -2073,19 +2073,8 @@ impl std::fmt::Display for AsyncOperationExpression {
             } => {
                 write!(f, "{} {}", r#async, expression)
             }
-            Self::Concurrently {
-                concurrently,
-                expressions,
-                ..
-            } => {
-                write!(f, "{} (", concurrently)?;
-                for (i, expression) in expressions.inner.iter().enumerate() {
-                    if i > 0 {
-                        write!(f, ", ")?;
-                    }
-                    write!(f, "{}", expression)?;
-                }
-                write!(f, ")")
+            Self::Concurrently { concurrently, .. } => {
+                write!(f, "{} {{{{ /* ... */ }}}}", concurrently)
             }
         }
     }
@@ -3737,5 +3726,112 @@ mod tests {
         };
 
         assert_eq!(constant_fetch.to_string(), "Foo::BAR");
+    }
+
+    #[test]
+    fn test_function_operation_expression() {
+        let function_call = FunctionOperationExpression::Call {
+            comments: CommentGroup { comments: vec![] },
+            function: Box::new(Expression::Identifier(Identifier {
+                position: 0,
+                value: ByteString::from("foo"),
+            })),
+            generics: None,
+            arguments: ArgumentListExpression {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                arguments: CommaSeparated {
+                    inner: vec![ArgumentExpression::Value {
+                        comments: CommentGroup { comments: vec![] },
+                        value: Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("1"),
+                        })),
+                    }],
+                    commas: vec![],
+                },
+                right_parenthesis: 0,
+            },
+        };
+
+        assert_eq!(function_call.to_string(), "foo(1)");
+
+        let function_closure = FunctionOperationExpression::ClosureCreation {
+            comments: CommentGroup { comments: vec![] },
+            function: Box::new(Expression::Identifier(Identifier {
+                position: 0,
+                value: ByteString::from("foo"),
+            })),
+            generics: None,
+            placeholder: ArgumentPlaceholderExpression {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                ellipsis: 0,
+                right_parenthesis: 0,
+            },
+        };
+
+        assert_eq!(function_closure.to_string(), "foo(...)");
+    }
+
+    #[test]
+    fn test_async_operation_expression() {
+        let r#async = AsyncOperationExpression::Async {
+            comments: CommentGroup { comments: vec![] },
+            r#async: Keyword::new(ByteString::from("async"), 0),
+            expression: Box::new(Expression::FunctionOperation(
+                FunctionOperationExpression::Call {
+                    comments: CommentGroup { comments: vec![] },
+                    function: Box::new(Expression::Identifier(Identifier {
+                        position: 0,
+                        value: ByteString::from("foo"),
+                    })),
+                    generics: None,
+                    arguments: ArgumentListExpression {
+                        comments: CommentGroup { comments: vec![] },
+                        left_parenthesis: 0,
+                        arguments: CommaSeparated {
+                            inner: vec![ArgumentExpression::Value {
+                                comments: CommentGroup { comments: vec![] },
+                                value: Expression::Literal(Integer(LiteralInteger {
+                                    comments: CommentGroup { comments: vec![] },
+                                    position: 0,
+                                    value: ByteString::from("1"),
+                                })),
+                            }],
+                            commas: vec![],
+                        },
+                        right_parenthesis: 0,
+                    },
+                },
+            )),
+        };
+
+        assert_eq!(r#async.to_string(), "async foo(1)");
+
+        let r#await = AsyncOperationExpression::Await {
+            comments: CommentGroup { comments: vec![] },
+            r#await: Keyword::new(ByteString::from("await"), 0),
+            expression: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+        };
+
+        assert_eq!(r#await.to_string(), "await $foo");
+
+        let concurrently = AsyncOperationExpression::Concurrently {
+            comments: CommentGroup { comments: vec![] },
+            concurrently: Keyword::new(ByteString::from("concurrently"), 0),
+            left_brace: 0,
+            expressions: CommaSeparated {
+                inner: vec![],
+                commas: vec![],
+            },
+            right_brace: 0,
+        };
+
+        assert_eq!(concurrently.to_string(), "concurrently {{ /* ... */ }}");
     }
 }
