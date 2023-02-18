@@ -110,3 +110,24 @@ impl Node for PropertyEntryDefinition {
         }
     }
 }
+
+impl std::fmt::Display for PropertyDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} {} {};",
+            self.modifiers, self.type_definition, self.entry
+        )
+    }
+}
+
+impl std::fmt::Display for PropertyEntryDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            Self::Uninitialized { variable } => write!(f, "{}", variable),
+            Self::Initialized {
+                variable, value, ..
+            } => write!(f, "{} = {}", variable, value),
+        }
+    }
+}
