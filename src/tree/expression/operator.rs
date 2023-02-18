@@ -2001,7 +2001,7 @@ impl std::fmt::Display for AssignmentOperationExpression {
                 write!(f, "{} /= {}", left, right)
             }
             Self::Exponentiation { left, right, .. } => {
-                write!(f, "{} ^= {}", left, right)
+                write!(f, "{} **= {}", left, right)
             }
             Self::Modulo { left, right, .. } => {
                 write!(f, "{} %= {}", left, right)
@@ -2452,5 +2452,218 @@ mod tests {
         };
 
         assert_eq!(expression.to_string(), "$($foo)");
+    }
+
+    #[test]
+    fn test_assignment_operation_expression_display() {
+        let assignment = AssignmentOperationExpression::Assignment {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            equals: 0,
+        };
+
+        assert_eq!(assignment.to_string(), "$foo = $bar");
+
+        let addition = AssignmentOperationExpression::Addition {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            plus_equals: 0,
+        };
+
+        assert_eq!(addition.to_string(), "$foo += $bar");
+
+        let subtraction = AssignmentOperationExpression::Subtraction {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            minus_equals: 0,
+        };
+
+        assert_eq!(subtraction.to_string(), "$foo -= $bar");
+
+        let multiplication = AssignmentOperationExpression::Multiplication {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            asterisk_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(multiplication.to_string(), "$foo *= $bar");
+
+        let division = AssignmentOperationExpression::Division {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            slash_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(division.to_string(), "$foo /= $bar");
+
+        let modulo = AssignmentOperationExpression::Modulo {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            percent_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(modulo.to_string(), "$foo %= $bar");
+
+        let bitwise_and = AssignmentOperationExpression::BitwiseAnd {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            ampersand_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(bitwise_and.to_string(), "$foo &= $bar");
+
+        let bitwise_or = AssignmentOperationExpression::BitwiseOr {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            pipe_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(bitwise_or.to_string(), "$foo |= $bar");
+
+        let bitwise_xor = AssignmentOperationExpression::BitwiseXor {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            caret_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(bitwise_xor.to_string(), "$foo ^= $bar");
+
+        let left_shift = AssignmentOperationExpression::LeftShift {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            left_shift_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(left_shift.to_string(), "$foo <<= $bar");
+
+        let right_shift = AssignmentOperationExpression::RightShift {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right_shift_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(right_shift.to_string(), "$foo >>= $bar");
+
+        let exponentiation = AssignmentOperationExpression::Exponentiation {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            pow_equals: 0,
+        };
+
+        assert_eq!(exponentiation.to_string(), "$foo **= $bar");
+
+        let concat = AssignmentOperationExpression::Concat {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            dot_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(concat.to_string(), "$foo .= $bar");
+
+        let coalesce = AssignmentOperationExpression::Coalesce {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            coalesce_equals: 0,
+        };
+
+        assert_eq!(coalesce.to_string(), "$foo ??= $bar");
     }
 }
