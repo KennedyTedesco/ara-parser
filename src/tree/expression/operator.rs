@@ -1905,7 +1905,7 @@ impl std::fmt::Display for ArithmeticOperationExpression {
                 write!(f, "{} / {}", left, right)
             }
             Self::Exponentiation { left, right, .. } => {
-                write!(f, "{} ^ {}", left, right)
+                write!(f, "{} ** {}", left, right)
             }
             Self::Modulo { left, right, .. } => {
                 write!(f, "{} % {}", left, right)
@@ -2665,5 +2665,162 @@ mod tests {
         };
 
         assert_eq!(coalesce.to_string(), "$foo ??= $bar");
+    }
+
+    #[test]
+    fn test_arithmetic_operation_expression_display() {
+        let addition = ArithmeticOperationExpression::Addition {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            plus: 0,
+        };
+
+        assert_eq!(addition.to_string(), "$foo + $bar");
+
+        let subtraction = ArithmeticOperationExpression::Subtraction {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            minus: 0,
+        };
+
+        assert_eq!(subtraction.to_string(), "$foo - $bar");
+
+        let multiplication = ArithmeticOperationExpression::Multiplication {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            asterisk: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(multiplication.to_string(), "$foo * $bar");
+
+        let division = ArithmeticOperationExpression::Division {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            slash: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(division.to_string(), "$foo / $bar");
+
+        let modulo = ArithmeticOperationExpression::Modulo {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            percent: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(modulo.to_string(), "$foo % $bar");
+
+        let exponentiation = ArithmeticOperationExpression::Exponentiation {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            pow: 0,
+        };
+
+        assert_eq!(exponentiation.to_string(), "$foo ** $bar");
+
+        let negative = ArithmeticOperationExpression::Negative {
+            comments: CommentGroup { comments: vec![] },
+            minus: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(negative.to_string(), "-$bar");
+
+        let positive = ArithmeticOperationExpression::Positive {
+            comments: CommentGroup { comments: vec![] },
+            plus: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(positive.to_string(), "+$bar");
+
+        let pre_increment = ArithmeticOperationExpression::PreIncrement {
+            comments: CommentGroup { comments: vec![] },
+            increment: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(pre_increment.to_string(), "++$bar");
+
+        let pre_decrement = ArithmeticOperationExpression::PreDecrement {
+            comments: CommentGroup { comments: vec![] },
+            decrement: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(pre_decrement.to_string(), "--$bar");
+
+        let post_increment = ArithmeticOperationExpression::PostIncrement {
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            increment: 0,
+        };
+
+        assert_eq!(post_increment.to_string(), "$bar++");
+
+        let post_decrement = ArithmeticOperationExpression::PostDecrement {
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            decrement: 0,
+        };
+
+        assert_eq!(post_decrement.to_string(), "$bar--");
     }
 }
