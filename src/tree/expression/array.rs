@@ -168,3 +168,33 @@ impl Node for TupleExpression {
         "tuple expression".to_string()
     }
 }
+
+impl std::fmt::Display for VecExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}[{}]", self.vec, self.elements)
+    }
+}
+
+impl std::fmt::Display for VecElementExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+impl std::fmt::Display for DictExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}[{}]", self.dict, self.elements)
+    }
+}
+
+impl std::fmt::Display for DictElementExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} => {}", self.key, self.value)
+    }
+}
+
+impl std::fmt::Display for TupleExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({})", self.elements)
+    }
+}
