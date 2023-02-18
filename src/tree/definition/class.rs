@@ -251,7 +251,7 @@ impl std::fmt::Display for ClassDefinitionMember {
 
 impl std::fmt::Display for ClassDefinitionBody {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, " {}", "{ /* ... */ }")
+        write!(f, " {{ /* ... */ }}")
     }
 }
 

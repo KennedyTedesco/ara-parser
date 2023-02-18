@@ -77,6 +77,6 @@ impl std::fmt::Display for AnonymousClassExpression {
             write!(f, " {}", implements)?;
         }
 
-        write!(f, " {}", "{ /* ... */ }")
+        write!(f, " {{ /* ... */ }}")
     }
 }
