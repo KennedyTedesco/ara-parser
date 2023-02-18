@@ -2345,6 +2345,42 @@ impl std::fmt::Display for ClassOperationExpression {
                 write!(f, "{}", arguments)
             }
             Self::AnonymousInitialization { class, .. } => write!(f, "new {}", class),
+            ClassOperationExpression::StaticMethodCall {
+                class,
+                method,
+                generics,
+                arguments,
+                ..
+            } => {
+                write!(f, "{}::{}", class, method)?;
+                if let Some(generics) = generics {
+                    write!(f, "{}", generics)?;
+                }
+                write!(f, "{}", arguments)
+            }
+            ClassOperationExpression::StaticMethodClosureCreation {
+                class,
+                method,
+                generics,
+                placeholder,
+                ..
+            } => {
+                write!(f, "{}::{}", class, method)?;
+                if let Some(generics) = generics {
+                    write!(f, "{}", generics)?;
+                }
+                write!(f, "{}", placeholder)
+            }
+            ClassOperationExpression::StaticPropertyFetch {
+                class, property, ..
+            } => {
+                write!(f, "{}::{}", class, property)
+            }
+            ClassOperationExpression::ConstantFetch {
+                class, constant, ..
+            } => {
+                write!(f, "{}::{}", class, constant)
+            }
         }
     }
 }
