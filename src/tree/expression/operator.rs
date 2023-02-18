@@ -2415,3 +2415,42 @@ impl std::fmt::Display for FunctionOperationExpression {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+
+    #[test]
+    fn test_functional_operation_expression_display() {
+        let pipe = FunctionalOperationExpression::Pipe {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            pipe: 0,
+            greater_than: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(pipe.to_string(), "$foo |> $bar");
+
+        let expression = FunctionalOperationExpression::Expression {
+            comments: CommentGroup { comments: vec![] },
+            dollar: 0,
+            generics: None,
+            left_parenthesis: 0,
+            expression: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right_parenthesis: 0,
+        };
+
+        assert_eq!(expression.to_string(), "$($foo)");
+    }
+}
