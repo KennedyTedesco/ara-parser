@@ -2103,7 +2103,7 @@ impl std::fmt::Display for RangeOperationExpression {
             Self::To { double_dot, to, .. } => {
                 write!(f, "..{}{}", double_dot, to)
             }
-            Self::ToInclusive {  to, .. } => {
+            Self::ToInclusive { to, .. } => {
                 write!(f, "..={}", to)
             }
             Self::From {
