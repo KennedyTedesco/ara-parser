@@ -134,3 +134,34 @@ impl Node for MatchArmConditionExpression {
         "match arm condition expression".to_string()
     }
 }
+
+impl std::fmt::Display for MatchExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "match ")?;
+        if let Some(expression) = &self.expression {
+            write!(f, "{} ", expression)?;
+        }
+        write!(f, "{}", self.body)
+    }
+}
+
+impl std::fmt::Display for MatchBodyExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, " {}", "{ /* ... */ }")
+    }
+}
+
+impl std::fmt::Display for MatchArmExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} => {}", self.condition, self.expression)
+    }
+}
+
+impl std::fmt::Display for MatchArmConditionExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            Self::Expressions(expressions) => write!(f, "{}", expressions),
+            Self::Default(default) => write!(f, "{}", default),
+        }
+    }
+}
