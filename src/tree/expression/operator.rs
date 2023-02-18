@@ -3535,4 +3535,21 @@ mod tests {
 
         assert_eq!(nullsafe_property_fetch.to_string(), "$foo?->bar");
     }
+
+    #[test]
+    fn test_class_operation_initialization_class_expression_display() {
+        let identifier = ClassOperationInitializationClassExpression::Identifier(Identifier {
+            position: 0,
+            value: ByteString::from("Foo"),
+        });
+
+        assert_eq!(identifier.to_string(), "new Foo");
+
+        let variable = ClassOperationInitializationClassExpression::Variable(Variable {
+            position: 0,
+            name: ByteString::from("foo"),
+        });
+
+        assert_eq!(variable.to_string(), "new $foo");
+    }
 }
