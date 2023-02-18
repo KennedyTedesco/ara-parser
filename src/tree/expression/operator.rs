@@ -1982,6 +1982,80 @@ impl std::fmt::Display for LogicalOperationExpression {
     }
 }
 
+impl std::fmt::Display for AssignmentOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Assignment { left, right, .. } => {
+                write!(f, "{} = {}", left, right)
+            }
+            Self::Addition { left, right, .. } => {
+                write!(f, "{} += {}", left, right)
+            }
+            Self::Subtraction { left, right, .. } => {
+                write!(f, "{} -= {}", left, right)
+            }
+            Self::Multiplication { left, right, .. } => {
+                write!(f, "{} *= {}", left, right)
+            }
+            Self::Division { left, right, .. } => {
+                write!(f, "{} /= {}", left, right)
+            }
+            Self::Exponentiation { left, right, .. } => {
+                write!(f, "{} ^= {}", left, right)
+            }
+            Self::Modulo { left, right, .. } => {
+                write!(f, "{} %= {}", left, right)
+            }
+            Self::Concat { left, right, .. } => {
+                write!(f, "{} .= {}", left, right)
+            }
+            Self::BitwiseAnd { left, right, .. } => {
+                write!(f, "{} &= {}", left, right)
+            }
+            Self::BitwiseOr { left, right, .. } => {
+                write!(f, "{} |= {}", left, right)
+            }
+            Self::BitwiseXor { left, right, .. } => {
+                write!(f, "{} ^= {}", left, right)
+            }
+            Self::LeftShift { left, right, .. } => {
+                write!(f, "{} <<= {}", left, right)
+            }
+            Self::RightShift { left, right, .. } => {
+                write!(f, "{} >>= {}", left, right)
+            }
+            Self::Coalesce { left, right, .. } => {
+                write!(f, "{} ??= {}", left, right)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for BitwiseOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::LeftShift { left, right, .. } => {
+                write!(f, "{} << {}", left, right)
+            }
+            Self::RightShift { left, right, .. } => {
+                write!(f, "{} >> {}", left, right)
+            }
+            Self::And { left, right, .. } => {
+                write!(f, "{} & {}", left, right)
+            }
+            Self::Or { left, right, .. } => {
+                write!(f, "{} | {}", left, right)
+            }
+            Self::Xor { left, right, .. } => {
+                write!(f, "{} ^ {}", left, right)
+            }
+            Self::Not { right, .. } => {
+                write!(f, "!{}", right)
+            }
+        }
+    }
+}
+
 impl std::fmt::Display for AsyncOperationExpression {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match &self {
