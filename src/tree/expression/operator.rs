@@ -2050,7 +2050,7 @@ impl std::fmt::Display for BitwiseOperationExpression {
                 write!(f, "{} ^ {}", left, right)
             }
             Self::Not { right, .. } => {
-                write!(f, "!{}", right)
+                write!(f, "~{}", right)
             }
         }
     }
@@ -2822,5 +2822,94 @@ mod tests {
         };
 
         assert_eq!(post_decrement.to_string(), "$bar--");
+    }
+
+    #[test]
+    fn test_bitwise_operation_expression_display() {
+        let bitwise_and = BitwiseOperationExpression::And {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            and: 0,
+        };
+
+        assert_eq!(bitwise_and.to_string(), "$foo & $bar");
+
+        let bitwise_or = BitwiseOperationExpression::Or {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            or: 0,
+        };
+
+        assert_eq!(bitwise_or.to_string(), "$foo | $bar");
+
+        let bitwise_xor = BitwiseOperationExpression::Xor {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            xor: 0,
+        };
+
+        assert_eq!(bitwise_xor.to_string(), "$foo ^ $bar");
+
+        let bitwise_not = BitwiseOperationExpression::Not {
+            comments: CommentGroup { comments: vec![] },
+            not: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(bitwise_not.to_string(), "~$bar");
+
+        let bitwise_left_shift = BitwiseOperationExpression::LeftShift {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            left_shift: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(bitwise_left_shift.to_string(), "$foo << $bar");
+
+        let bitwise_right_shift = BitwiseOperationExpression::RightShift {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right_shift: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(bitwise_right_shift.to_string(), "$foo >> $bar");
     }
 }
