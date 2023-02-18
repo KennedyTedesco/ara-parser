@@ -576,10 +576,6 @@ impl std::fmt::Display for MethodBodyDefinition {
 
 impl std::fmt::Display for MethodDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for attribute in &self.attributes {
-            write!(f, "{}", attribute)?;
-        }
-
         write!(f, "{} {} {}", self.modifiers, self.function, self.name)?;
 
         if let Some(templates) = &self.templates {
