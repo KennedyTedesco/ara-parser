@@ -2421,6 +2421,7 @@ mod tests {
     use super::*;
     use crate::lexer::byte_string::ByteString;
     use crate::tree::definition::r#type::SignedIntegerTypeDefinition;
+    use crate::tree::expression::argument::ArgumentExpression;
     use crate::tree::expression::literal::Literal::Integer;
     use crate::tree::expression::literal::LiteralInteger;
 
@@ -3403,5 +3404,135 @@ mod tests {
         };
 
         assert_eq!(throw.to_string(), "throw $foo");
+    }
+
+    #[test]
+    fn test_object_operation_expression_display() {
+        let clone = ObjectOperationExpression::Clone {
+            comments: CommentGroup { comments: vec![] },
+            clone: Keyword::new(ByteString::from("clone"), 0),
+            object: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+        };
+
+        assert_eq!(clone.to_string(), "clone $foo");
+
+        let method_call = ObjectOperationExpression::MethodCall {
+            comments: CommentGroup { comments: vec![] },
+            object: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            arrow: 0,
+            method: Identifier {
+                position: 0,
+                value: ByteString::from("bar"),
+            },
+            generics: None,
+            arguments: ArgumentListExpression {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                arguments: CommaSeparated {
+                    inner: vec![ArgumentExpression::Value {
+                        comments: CommentGroup { comments: vec![] },
+                        value: Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("1"),
+                        })),
+                    }],
+                    commas: vec![],
+                },
+                right_parenthesis: 0,
+            },
+        };
+
+        assert_eq!(method_call.to_string(), "$foo->bar(1)");
+
+        let nullsafe_method_call = ObjectOperationExpression::NullsafeMethodCall {
+            comments: CommentGroup { comments: vec![] },
+            object: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            question_arrow: 0,
+            method: Identifier {
+                position: 0,
+                value: ByteString::from("bar"),
+            },
+            generics: None,
+            arguments: ArgumentListExpression {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                arguments: CommaSeparated {
+                    inner: vec![ArgumentExpression::Value {
+                        comments: CommentGroup { comments: vec![] },
+                        value: Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("1"),
+                        })),
+                    }],
+                    commas: vec![],
+                },
+                right_parenthesis: 0,
+            },
+        };
+
+        assert_eq!(nullsafe_method_call.to_string(), "$foo?->bar(1)");
+
+        let method_closure_creation = ObjectOperationExpression::MethodClosureCreation {
+            comments: CommentGroup { comments: vec![] },
+            object: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            arrow: 0,
+            method: Identifier {
+                position: 0,
+                value: ByteString::from("bar"),
+            },
+            generics: None,
+            placeholder: ArgumentPlaceholderExpression {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                ellipsis: 0,
+                right_parenthesis: 0,
+            },
+        };
+
+        assert_eq!(method_closure_creation.to_string(), "$foo->bar(...)");
+
+        let property_fetch = ObjectOperationExpression::PropertyFetch {
+            comments: CommentGroup { comments: vec![] },
+            object: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            arrow: 0,
+            property: Identifier {
+                position: 0,
+                value: ByteString::from("bar"),
+            },
+        };
+
+        assert_eq!(property_fetch.to_string(), "$foo->bar");
+
+        let nullsafe_property_fetch = ObjectOperationExpression::NullsafePropertyFetch {
+            comments: CommentGroup { comments: vec![] },
+            object: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            question_arrow: 0,
+            property: Identifier {
+                position: 0,
+                value: ByteString::from("bar"),
+            },
+        };
+
+        assert_eq!(nullsafe_property_fetch.to_string(), "$foo?->bar");
     }
 }
