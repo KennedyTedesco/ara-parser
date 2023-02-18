@@ -257,21 +257,69 @@ impl std::fmt::Display for ClassDefinitionBody {
 
 impl std::fmt::Display for ClassDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{} class {}{}{}{}{}",
-            self.modifiers,
-            self.name,
-            self.templates
-                .as_ref()
-                .map_or(String::default(), |t| t.to_string()),
-            self.extends
-                .as_ref()
-                .map_or(String::default(), |e| e.to_string()),
-            self.implements
-                .as_ref()
-                .map_or(String::default(), |i| i.to_string()),
-            self.body,
-        )
+        write!(f, "{} class {}", self.modifiers, self.name)?;
+
+        if let Some(templates) = &self.templates {
+            write!(f, " {}", templates)?;
+        }
+
+        if let Some(extends) = &self.extends {
+            write!(f, " {}", extends)?;
+        }
+
+        if let Some(implements) = &self.implements {
+            write!(f, " {}", implements)?;
+        }
+
+        write!(f, " {}", self.body)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::definition::modifier::ModifierDefinition;
+
+    #[test]
+    fn test_class_definition_display() {
+        let class_definition = ClassDefinition {
+            comments: CommentGroup { comments: vec![] },
+            class: Keyword::new(ByteString::from("class"), 0),
+            attributes: vec![],
+            modifiers: ModifierGroupDefinition {
+                position: 0,
+                modifiers: vec![ModifierDefinition::Abstract(Keyword::new(
+                    ByteString::from("abstract"),
+                    0,
+                ))],
+            },
+            name: Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            },
+            templates: None,
+            extends: Some(ClassDefinitionExtends {
+                extends: Keyword::new(ByteString::from("extends"), 0),
+                parent: TemplatedIdentifier {
+                    name: Identifier {
+                        position: 0,
+                        value: ByteString::from("Bar"),
+                    },
+                    templates: None,
+                },
+            }),
+            implements: None,
+            body: ClassDefinitionBody {
+                left_brace: 19,
+                members: vec![],
+                right_brace: 20,
+            },
+        };
+
+        assert_eq!(
+            class_definition.to_string(),
+            "abstract class Foo extends Bar { /* ... */ }"
+        );
     }
 }
