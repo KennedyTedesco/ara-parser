@@ -147,3 +147,27 @@ impl Node for ArgumentPlaceholderExpression {
         "argument placeholder expression".to_string()
     }
 }
+
+impl std::fmt::Display for ArgumentListExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "(")?;
+        for (i, arg) in self.arguments.inner.iter().enumerate() {
+            if i > 0 {
+                write!(f, ", ")?;
+            }
+            match arg {
+                ArgumentExpression::Value { value, .. } => write!(f, "{}", value)?,
+                ArgumentExpression::Spread { value, .. } => write!(f, "...{}", value)?,
+                ArgumentExpression::ReverseSpread { value, .. } => write!(f, "{}...", value)?,
+                ArgumentExpression::Named { name, value, .. } => write!(f, "{}: {}", name, value)?,
+            }
+        }
+        write!(f, ")")
+    }
+}
+
+impl std::fmt::Display for ArgumentPlaceholderExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "(...)")
+    }
+}

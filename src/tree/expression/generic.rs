@@ -33,3 +33,18 @@ impl Node for GenericGroupExpression {
         "generic group expression".to_string()
     }
 }
+
+impl std::fmt::Display for GenericGroupExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "::")?;
+        write!(f, "<")?;
+        for (i, t) in self.types.inner.iter().enumerate() {
+            if i > 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{}", t)?;
+        }
+        write!(f, ">")?;
+        Ok(())
+    }
+}

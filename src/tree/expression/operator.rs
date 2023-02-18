@@ -1888,3 +1888,389 @@ impl Node for RangeOperationExpression {
         }
     }
 }
+
+impl std::fmt::Display for ArithmeticOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Addition { left, right, .. } => {
+                write!(f, "{} + {}", left, right)
+            }
+            Self::Subtraction { left, right, .. } => {
+                write!(f, "{} - {}", left, right)
+            }
+            Self::Multiplication { left, right, .. } => {
+                write!(f, "{} * {}", left, right)
+            }
+            Self::Division { left, right, .. } => {
+                write!(f, "{} / {}", left, right)
+            }
+            Self::Exponentiation { left, right, .. } => {
+                write!(f, "{} ^ {}", left, right)
+            }
+            Self::Modulo { left, right, .. } => {
+                write!(f, "{} % {}", left, right)
+            }
+            Self::Negative { right, .. } => {
+                write!(f, "-{}", right)
+            }
+            Self::Positive { right, .. } => {
+                write!(f, "+{}", right)
+            }
+            Self::PostDecrement { left, .. } => {
+                write!(f, "{}--", left)
+            }
+            Self::PostIncrement { left, .. } => {
+                write!(f, "{}++", left)
+            }
+            Self::PreDecrement { right, .. } => {
+                write!(f, "--{}", right)
+            }
+            Self::PreIncrement { right, .. } => {
+                write!(f, "++{}", right)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for ComparisonOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Equal { left, right, .. } => {
+                write!(f, "{} == {}", left, right)
+            }
+            Self::Identical { left, right, .. } => {
+                write!(f, "{} === {}", left, right)
+            }
+            Self::NotIdentical { left, right, .. } => {
+                write!(f, "{} !== {}", left, right)
+            }
+            Self::NotEqual { left, right, .. } => {
+                write!(f, "{} != {}", left, right)
+            }
+            Self::LessThan { left, right, .. } => {
+                write!(f, "{} < {}", left, right)
+            }
+            Self::LessThanOrEqual { left, right, .. } => {
+                write!(f, "{} <= {}", left, right)
+            }
+            Self::GreaterThan { left, right, .. } => {
+                write!(f, "{} > {}", left, right)
+            }
+            Self::GreaterThanOrEqual { left, right, .. } => {
+                write!(f, "{} >= {}", left, right)
+            }
+            Self::Spaceship { left, right, .. } => {
+                write!(f, "{} <=> {}", left, right)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for LogicalOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::And { left, right, .. } => {
+                write!(f, "{} and {}", left, right)
+            }
+            Self::Or { left, right, .. } => {
+                write!(f, "{} or {}", left, right)
+            }
+            Self::Not { right, .. } => {
+                write!(f, "!{}", right)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for AsyncOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Await {
+                r#await,
+                expression,
+                ..
+            } => {
+                write!(f, "{} {}", r#await, expression)
+            }
+            Self::Async {
+                r#async,
+                expression,
+                ..
+            } => {
+                write!(f, "{} {}", r#async, expression)
+            }
+            Self::Concurrently {
+                concurrently,
+                expressions,
+                ..
+            } => {
+                write!(f, "{} (", concurrently)?;
+                for (i, expression) in expressions.inner.iter().enumerate() {
+                    if i > 0 {
+                        write!(f, ", ")?;
+                    }
+                    write!(f, "{}", expression)?;
+                }
+                write!(f, ")")
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for RangeOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Between { from, to, .. } => {
+                write!(f, "{}..{}", from, to)
+            }
+            Self::BetweenInclusive { from, to, .. } => {
+                write!(f, "{}..={}", from, to)
+            }
+            Self::To { double_dot, to, .. } => {
+                write!(f, "..{}{}", double_dot, to)
+            }
+            Self::ToInclusive { double_dot, to, .. } => {
+                write!(f, "..={}", to)
+            }
+            Self::From {
+                from, double_dot, ..
+            } => {
+                write!(f, "{}{}..", from, double_dot)
+            }
+            Self::Full { double_dot, .. } => {
+                write!(f, "{}..", double_dot)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for FunctionalOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Expression {
+                generics,
+                expression,
+                ..
+            } => {
+                write!(f, "$(")?;
+                if let Some(generics) = generics {
+                    write!(f, "{}", generics)?;
+                }
+                write!(f, "{}", expression)?;
+                write!(f, ")")
+            }
+            Self::Pipe { left, right, .. } => write!(f, "{} |> {}", left, right),
+        }
+    }
+}
+
+impl std::fmt::Display for StringOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Concat { left, right, .. } => {
+                write!(f, "{} . {}", left, right)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for ArrayOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Access { array, index, .. } => {
+                write!(f, "{}[{}]", array, index)
+            }
+            Self::Push { array, .. } => {
+                write!(f, "{}[]", array)
+            }
+            Self::Unset { item, .. } => {
+                write!(f, "unset {}", item)
+            }
+            Self::Isset { item, .. } => {
+                write!(f, "isset {}", item)
+            }
+            Self::In { item, array, .. } => {
+                write!(f, "{} in {}", item, array)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for CoalesceOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Coalesce { left, right, .. } => {
+                write!(f, "{} ?? {}", left, right)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for TernaryOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Ternary {
+                condition,
+                if_true,
+                if_false,
+                ..
+            } => {
+                write!(f, "{} ? {} : {}", condition, if_true, if_false)
+            }
+            Self::ShortTernary {
+                condition,
+                if_false,
+                ..
+            } => {
+                write!(f, "{} ?: {}", condition, if_false)
+            }
+            Self::ImplicitShortTernary {
+                condition,
+                if_false,
+                ..
+            } => {
+                write!(f, "{} ? : {}", condition, if_false)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for TypeOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Instanceof { left, right, .. } => {
+                write!(f, "{} instanceof {}", left, right)
+            }
+            Self::Is { left, right, .. } => {
+                write!(f, "{} is {}", left, right)
+            }
+            Self::Into { left, right, .. } => {
+                write!(f, "{} into {}", left, right)
+            }
+            Self::As { left, right, .. } => {
+                write!(f, "{} as {}", left, right)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for GeneratorOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Yield { .. } => {
+                write!(f, "yield")
+            }
+            Self::YieldFrom { value, .. } => {
+                write!(f, "yield from {}", value)
+            }
+            Self::YieldValue { value, .. } => {
+                write!(f, "yield {}", value)
+            }
+            Self::YieldKeyValue { key, value, .. } => {
+                write!(f, "yield {} => {}", key, value)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for ExceptionOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Throw { value, .. } => {
+                write!(f, "throw {}", value)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for ObjectOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Clone { object, .. } => {
+                write!(f, "clone {}", object)
+            }
+            Self::MethodCall {
+                object,
+                method,
+                generics,
+                arguments,
+                ..
+            } => {
+                write!(f, "{}->{}", object, method)?;
+                if let Some(generics) = generics {
+                    write!(f, "{}", generics)?;
+                }
+                write!(f, "{}", arguments)
+            }
+            Self::NullsafeMethodCall {
+                object,
+                method,
+                generics,
+                arguments,
+                ..
+            } => {
+                write!(f, "{}?->{}", object, method)?;
+                if let Some(generics) = generics {
+                    write!(f, "{}", generics)?;
+                }
+                write!(f, "{}", arguments)
+            }
+            Self::MethodClosureCreation {
+                object,
+                method,
+                generics,
+                placeholder,
+                ..
+            } => {
+                write!(f, "{}->{}", object, method)?;
+                if let Some(generics) = generics {
+                    write!(f, "{}", generics)?;
+                }
+                write!(f, "{}", placeholder)
+            }
+            Self::PropertyFetch {
+                object, property, ..
+            } => {
+                write!(f, "{}->{}", object, property)
+            }
+            Self::NullsafePropertyFetch {
+                object, property, ..
+            } => {
+                write!(f, "{}?->{}", object, property)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for ClassOperationInitializationClassExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Identifier(identifier) => {
+                write!(f, "new {}", identifier)
+            }
+            Self::Variable(variable) => {
+                write!(f, "new {}", variable)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for ClassOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Initialization {
+                class,
+                generics,
+                arguments,
+                ..
+            } => {
+                write!(f, "{}", class)?;
+                if let Some(generics) = generics {
+                    write!(f, "{}", generics)?;
+                }
+                write!(f, "{}", arguments)
+            }
+            Self::AnonymousInitialization { class, .. } => write!(f, "new {}", class),
+        }
+    }
+}

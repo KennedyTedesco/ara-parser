@@ -226,3 +226,52 @@ impl Node for ClassDefinitionMember {
         }
     }
 }
+
+impl std::fmt::Display for ClassDefinitionExtends {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "extends {}", self.parent)
+    }
+}
+
+impl std::fmt::Display for ClassDefinitionImplements {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "implements {}", self.interfaces)
+    }
+}
+
+impl std::fmt::Display for ClassDefinitionMember {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            Self::Constant(constant) => write!(f, "{}", constant),
+            Self::Property(property) => write!(f, "{}", property),
+            Self::Method(method) => write!(f, "{}", method),
+        }
+    }
+}
+
+impl std::fmt::Display for ClassDefinitionBody {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, " {}", "{ /* ... */ }")
+    }
+}
+
+impl std::fmt::Display for ClassDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} class {}{}{}{}{}",
+            self.modifiers,
+            self.name,
+            self.templates
+                .as_ref()
+                .map_or(String::new(), |t| t.to_string()),
+            self.extends
+                .as_ref()
+                .map_or(String::new(), |e| e.to_string()),
+            self.implements
+                .as_ref()
+                .map_or(String::new(), |i| i.to_string()),
+            self.body,
+        )
+    }
+}

@@ -64,3 +64,19 @@ impl Node for AnonymousClassExpression {
         "anonymous class expression".to_string()
     }
 }
+
+impl std::fmt::Display for AnonymousClassExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "class {}", self.arguments)?;
+
+        if let Some(extends) = &self.extends {
+            write!(f, " {}", extends)?;
+        }
+
+        if let Some(implements) = &self.implements {
+            write!(f, " {}", implements)?;
+        }
+
+        write!(f, " {}", "{ /* ... */ }")
+    }
+}

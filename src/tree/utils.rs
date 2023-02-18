@@ -12,3 +12,18 @@ pub struct CommaSeparated<T: Node> {
     pub inner: Vec<T>,
     pub commas: Vec<usize>, // `,`
 }
+
+impl<T: Node + std::fmt::Display> std::fmt::Display for CommaSeparated<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let mut first = true;
+        for node in self.inner.iter() {
+            if first {
+                first = false;
+            } else {
+                write!(f, ",")?;
+            }
+            write!(f, "{}", node)?;
+        }
+        Ok(())
+    }
+}

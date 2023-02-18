@@ -71,3 +71,26 @@ impl Node for AttributeDefinition {
         "attribute definition".to_string()
     }
 }
+
+impl std::fmt::Display for AttributeGroupDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[")?;
+        for (i, member) in self.members.inner.iter().enumerate() {
+            if i > 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{}", member)?;
+        }
+        write!(f, "]")
+    }
+}
+
+impl std::fmt::Display for AttributeDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.name)?;
+        if let Some(arguments) = &self.arguments {
+            write!(f, "({})", arguments)?;
+        }
+        Ok(())
+    }
+}
