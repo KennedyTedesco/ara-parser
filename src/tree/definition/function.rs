@@ -478,13 +478,14 @@ impl std::fmt::Display for FunctionLikeParameterDefinition {
         let default_value = self
             .default
             .as_ref()
-            .map_or(String::new(), |value| value.to_string());
+            .map_or(String::default(), |value| value.to_string());
 
         write!(
             f,
-            "{}{}{}",
+            "{} {}{}",
             self.type_definition,
-            self.ellipsis.map_or(String::new(), |_| "...".to_string()),
+            self.ellipsis
+                .map_or(String::default(), |_| "...".to_string()),
             self.variable,
         )?;
 
@@ -525,13 +526,14 @@ impl std::fmt::Display for MethodParameterDefinition {
         let default_value = self
             .default
             .as_ref()
-            .map_or(String::new(), |value| value.to_string());
+            .map_or(String::default(), |value| value.to_string());
 
         write!(
             f,
             "{}{}{}",
             self.type_definition,
-            self.ellipsis.map_or(String::new(), |_| "...".to_string()),
+            self.ellipsis
+                .map_or(String::default(), |_| "...".to_string()),
             self.variable,
         )?;
 

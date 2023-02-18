@@ -206,7 +206,7 @@ impl std::fmt::Display for ArrowFunctionExpression {
         }
         write!(
             f,
-            "{} {}{} => {}",
+            "{} {}{} => {};",
             self.r#fn, self.parameters, self.return_type, self.body
         )
     }
@@ -240,5 +240,64 @@ impl std::fmt::Display for AnonymousFunctionUseClauseExpression {
 impl std::fmt::Display for AnonymousFunctionUseClauseVariableExpression {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.variable)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::definition::function::FunctionLikeParameterDefinition;
+    use crate::tree::definition::r#type::SignedIntegerTypeDefinition;
+    use crate::tree::definition::r#type::TypeDefinition;
+
+    #[test]
+    fn arrow_function_expression_display() {
+        let arrow_function_expression = ArrowFunctionExpression {
+            attributes: vec![],
+            comments: CommentGroup { comments: vec![] },
+            r#static: Some(Keyword::new(ByteString::from("static"), 0)),
+            r#fn: Keyword::new(ByteString::from("fn"), 0),
+            parameters: FunctionLikeParameterListDefinition {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                parameters: CommaSeparated {
+                    inner: vec![FunctionLikeParameterDefinition {
+                        attributes: vec![],
+                        comments: CommentGroup { comments: vec![] },
+                        type_definition: TypeDefinition::SignedInteger(
+                            SignedIntegerTypeDefinition::I64(Keyword::new(
+                                ByteString::from("i64"),
+                                15,
+                            )),
+                        ),
+                        ellipsis: None,
+                        variable: Variable {
+                            position: 0,
+                            name: ByteString::from("foo"),
+                        },
+                        default: None,
+                    }],
+                    commas: vec![],
+                },
+                right_parenthesis: 0,
+            },
+            return_type: FunctionLikeReturnTypeDefinition {
+                colon: 0,
+                type_definition: TypeDefinition::SignedInteger(SignedIntegerTypeDefinition::I64(
+                    Keyword::new(ByteString::from("i64"), 15),
+                )),
+            },
+            double_arrow: 0,
+            body: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+        };
+
+        assert_eq!(
+            arrow_function_expression.to_string(),
+            "static fn (i64 $foo): i64 => $foo;"
+        );
     }
 }

@@ -264,13 +264,13 @@ impl std::fmt::Display for ClassDefinition {
             self.name,
             self.templates
                 .as_ref()
-                .map_or(String::new(), |t| t.to_string()),
+                .map_or(String::default(), |t| t.to_string()),
             self.extends
                 .as_ref()
-                .map_or(String::new(), |e| e.to_string()),
+                .map_or(String::default(), |e| e.to_string()),
             self.implements
                 .as_ref()
-                .map_or(String::new(), |i| i.to_string()),
+                .map_or(String::default(), |i| i.to_string()),
             self.body,
         )
     }
