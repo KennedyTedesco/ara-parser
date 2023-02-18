@@ -74,14 +74,7 @@ impl Node for AttributeDefinition {
 
 impl std::fmt::Display for AttributeGroupDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[")?;
-        for (i, member) in self.members.inner.iter().enumerate() {
-            if i > 0 {
-                write!(f, ", ")?;
-            }
-            write!(f, "{}", member)?;
-        }
-        write!(f, "]")
+        write!(f, "#[{}]", self.members)
     }
 }
 
@@ -89,8 +82,63 @@ impl std::fmt::Display for AttributeDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.name)?;
         if let Some(arguments) = &self.arguments {
-            write!(f, "({})", arguments)?;
+            write!(f, "{}", arguments)?;
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::comment::CommentGroup;
+    use crate::tree::expression::argument::ArgumentExpression;
+    use crate::tree::expression::literal::Literal::Integer;
+    use crate::tree::expression::literal::LiteralInteger;
+    use crate::tree::expression::Expression;
+
+    #[test]
+    fn test_attribute_group_definition_display() {
+        let attribute_group_definition = AttributeGroupDefinition {
+            hash_left_bracket: 0,
+            members: CommaSeparated {
+                inner: vec![
+                    AttributeDefinition {
+                        name: Identifier {
+                            position: 0,
+                            value: ByteString::from("Foo"),
+                        },
+                        arguments: None,
+                    },
+                    AttributeDefinition {
+                        name: Identifier {
+                            position: 0,
+                            value: ByteString::from("Bar"),
+                        },
+                        arguments: Some(ArgumentListExpression {
+                            comments: CommentGroup { comments: vec![] },
+                            left_parenthesis: 24,
+                            arguments: CommaSeparated {
+                                inner: vec![ArgumentExpression::Value {
+                                    comments: CommentGroup { comments: vec![] },
+                                    value: Expression::Literal(Integer(LiteralInteger {
+                                        comments: CommentGroup { comments: vec![] },
+                                        position: 0,
+                                        value: ByteString::from("1"),
+                                    })),
+                                }],
+                                commas: vec![],
+                            },
+                            right_parenthesis: 30,
+                        }),
+                    },
+                ],
+                commas: vec![],
+            },
+            right_bracket: 32,
+        };
+
+        assert_eq!(attribute_group_definition.to_string(), "#[Foo, Bar(1)]");
     }
 }
