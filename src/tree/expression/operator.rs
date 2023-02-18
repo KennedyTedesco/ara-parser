@@ -2142,7 +2142,7 @@ impl std::fmt::Display for StringOperationExpression {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match &self {
             Self::Concat { left, right, .. } => {
-                write!(f, "{} . {}", left, right)
+                write!(f, "{}.{}", left, right)
             }
         }
     }
@@ -3093,5 +3093,23 @@ mod tests {
         };
 
         assert_eq!(logical_not.to_string(), "!$foo");
+    }
+
+    #[test]
+    fn test_string_operation_expression_display() {
+        let concat = StringOperationExpression::Concat {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            dot: 0,
+        };
+
+        assert_eq!(concat.to_string(), "$foo.$bar");
     }
 }
