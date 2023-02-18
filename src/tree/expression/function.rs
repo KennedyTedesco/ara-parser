@@ -217,17 +217,13 @@ impl std::fmt::Display for AnonymousFunctionExpression {
         if let Some(r#static) = &self.r#static {
             write!(f, "{} ", r#static)?;
         }
-        write!(
-            f,
-            "{}{}{}",
-            self.function, self.parameters, self.return_type
-        )?;
+        write!(f, "{} {}", self.function, self.parameters)?;
 
         if let Some(use_clause) = &self.use_clause {
             write!(f, " {}", use_clause)?;
         }
 
-        write!(f, " {}", self.body)
+        write!(f, "{} {}", self.return_type, self.body)
     }
 }
 
@@ -298,6 +294,73 @@ mod tests {
         assert_eq!(
             arrow_function_expression.to_string(),
             "static fn (i64 $foo): i64 => $foo;"
+        );
+    }
+
+    #[test]
+    fn anonymous_function_expression_display() {
+        let anonymous_function_expression = AnonymousFunctionExpression {
+            attributes: vec![],
+            comments: CommentGroup { comments: vec![] },
+            r#static: Some(Keyword::new(ByteString::from("static"), 0)),
+            function: Keyword::new(ByteString::from("function"), 0),
+            parameters: FunctionLikeParameterListDefinition {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                parameters: CommaSeparated {
+                    inner: vec![FunctionLikeParameterDefinition {
+                        attributes: vec![],
+                        comments: CommentGroup { comments: vec![] },
+                        type_definition: TypeDefinition::SignedInteger(
+                            SignedIntegerTypeDefinition::I32(Keyword::new(
+                                ByteString::from("i32"),
+                                15,
+                            )),
+                        ),
+                        ellipsis: None,
+                        variable: Variable {
+                            position: 0,
+                            name: ByteString::from("foo"),
+                        },
+                        default: None,
+                    }],
+                    commas: vec![],
+                },
+                right_parenthesis: 0,
+            },
+            return_type: FunctionLikeReturnTypeDefinition {
+                colon: 0,
+                type_definition: TypeDefinition::SignedInteger(SignedIntegerTypeDefinition::I64(
+                    Keyword::new(ByteString::from("i64"), 15),
+                )),
+            },
+            use_clause: Some(AnonymousFunctionUseClauseExpression {
+                comments: CommentGroup { comments: vec![] },
+                r#use: Keyword::new(ByteString::from("use"), 0),
+                variables: CommaSeparated {
+                    inner: vec![AnonymousFunctionUseClauseVariableExpression {
+                        comments: CommentGroup { comments: vec![] },
+                        variable: Variable {
+                            position: 0,
+                            name: ByteString::from("bar"),
+                        },
+                    }],
+                    commas: vec![],
+                },
+                left_parenthesis: 0,
+                right_parenthesis: 0,
+            }),
+            body: BlockStatement {
+                comments: CommentGroup { comments: vec![] },
+                left_brace: 0,
+                statements: vec![],
+                right_brace: 0,
+            },
+        };
+
+        assert_eq!(
+            anonymous_function_expression.to_string(),
+            "static function (i32 $foo) use ($bar): i64 { /* ... */ }"
         );
     }
 }

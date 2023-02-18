@@ -44,6 +44,6 @@ impl Node for BlockStatement {
 
 impl std::fmt::Display for BlockStatement {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, " {{ /* ... */ }}")
+        write!(f, "{{ /* ... */ }}")
     }
 }
