@@ -519,3 +519,89 @@ impl std::fmt::Display for FunctionDefinition {
         write!(f, "{} {} {}", self.parameters, self.return_type, self.body)
     }
 }
+
+impl std::fmt::Display for MethodParameterDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let default_value = self
+            .default
+            .as_ref()
+            .map_or(String::new(), |value| value.to_string());
+
+        write!(
+            f,
+            "{}{}{}",
+            self.type_definition,
+            self.ellipsis.map_or(String::new(), |_| "...".to_string()),
+            self.variable,
+        )?;
+
+        if !default_value.is_empty() {
+            write!(f, " = {}", default_value)?;
+        }
+
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for MethodParameterListDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({})", self.parameters)
+    }
+}
+
+impl std::fmt::Display for MethodParameterDefaultValueDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+impl std::fmt::Display for MethodTypeConstraintDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} {} {}",
+            self.type_definition, self.r#is, self.type_definition
+        )
+    }
+}
+
+impl std::fmt::Display for MethodTypeConstraintGroupDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "where {}", self.constraints)
+    }
+}
+
+impl std::fmt::Display for MethodBodyDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            MethodBodyDefinition::Concrete(block) => write!(f, "{}", block),
+            MethodBodyDefinition::Abstract(..) => write!(f, ";"),
+        }
+    }
+}
+
+impl std::fmt::Display for MethodDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for attribute in &self.attributes {
+            write!(f, "{}", attribute)?;
+        }
+
+        write!(f, "{} {} {}", self.modifiers, self.function, self.name)?;
+
+        if let Some(templates) = &self.templates {
+            write!(f, "{}", templates)?;
+        }
+
+        write!(f, "{}", self.parameters)?;
+
+        if let Some(return_type) = &self.return_type {
+            write!(f, "{}", return_type)?;
+        }
+
+        if let Some(constraints) = &self.constraints {
+            write!(f, "{}", constraints)?;
+        }
+
+        write!(f, "{}", self.body)
+    }
+}
