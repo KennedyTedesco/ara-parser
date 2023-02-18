@@ -591,4 +591,293 @@ mod tests {
             "type filter<T> = Closure<(T), bool>;"
         );
     }
+
+    #[test]
+    fn test_type_definition_display() {
+        let type_definition = TypeDefinition::Identifier(TemplatedIdentifier {
+            name: Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            },
+            templates: None,
+        });
+
+        assert_eq!(type_definition.to_string(), "Foo");
+
+        let nullable = TypeDefinition::Nullable(
+            0,
+            Box::new(TypeDefinition::Identifier(TemplatedIdentifier {
+                name: Identifier {
+                    position: 0,
+                    value: ByteString::from("Foo"),
+                },
+                templates: None,
+            })),
+        );
+
+        assert_eq!(nullable.to_string(), "?Foo");
+
+        let union = TypeDefinition::Union(vec![
+            TypeDefinition::Identifier(TemplatedIdentifier {
+                name: Identifier {
+                    position: 0,
+                    value: ByteString::from("Foo"),
+                },
+                templates: None,
+            }),
+            TypeDefinition::Identifier(TemplatedIdentifier {
+                name: Identifier {
+                    position: 0,
+                    value: ByteString::from("Bar"),
+                },
+                templates: None,
+            }),
+        ]);
+
+        assert_eq!(union.to_string(), "Foo|Bar");
+
+        let intersection = TypeDefinition::Intersection(vec![
+            TypeDefinition::Identifier(TemplatedIdentifier {
+                name: Identifier {
+                    position: 0,
+                    value: ByteString::from("Foo"),
+                },
+                templates: None,
+            }),
+            TypeDefinition::Identifier(TemplatedIdentifier {
+                name: Identifier {
+                    position: 0,
+                    value: ByteString::from("Bar"),
+                },
+                templates: None,
+            }),
+        ]);
+
+        assert_eq!(intersection.to_string(), "Foo&Bar");
+
+        let void = TypeDefinition::Void(Keyword {
+            value: ByteString::from("void"),
+            position: 0,
+        });
+
+        assert_eq!(void.to_string(), "void");
+
+        let never = TypeDefinition::Never(Keyword {
+            value: ByteString::from("never"),
+            position: 0,
+        });
+
+        assert_eq!(never.to_string(), "never");
+
+        let boolean = TypeDefinition::Boolean(Keyword {
+            value: ByteString::from("bool"),
+            position: 0,
+        });
+
+        assert_eq!(boolean.to_string(), "bool");
+
+        let string = TypeDefinition::String(Keyword {
+            value: ByteString::from("string"),
+            position: 0,
+        });
+
+        assert_eq!(string.to_string(), "string");
+
+        let dict = TypeDefinition::Dict(
+            Keyword {
+                value: ByteString::from("dict"),
+                position: 0,
+            },
+            TypeTemplateGroupDefinition {
+                comments: CommentGroup { comments: vec![] },
+                less_than: 0,
+                members: CommaSeparated {
+                    inner: vec![
+                        TypeDefinition::Identifier(TemplatedIdentifier {
+                            name: Identifier {
+                                position: 0,
+                                value: ByteString::from("Foo"),
+                            },
+                            templates: None,
+                        }),
+                        TypeDefinition::Identifier(TemplatedIdentifier {
+                            name: Identifier {
+                                position: 0,
+                                value: ByteString::from("Bar"),
+                            },
+                            templates: None,
+                        }),
+                    ],
+                    commas: vec![0],
+                },
+                greater_than: 0,
+            },
+        );
+
+        assert_eq!(dict.to_string(), "dict<Foo, Bar>");
+
+        let vec = TypeDefinition::Vec(
+            Keyword {
+                value: ByteString::from("vec"),
+                position: 0,
+            },
+            TypeTemplateGroupDefinition {
+                comments: CommentGroup { comments: vec![] },
+                less_than: 0,
+                members: CommaSeparated {
+                    inner: vec![TypeDefinition::Identifier(TemplatedIdentifier {
+                        name: Identifier {
+                            position: 0,
+                            value: ByteString::from("Foo"),
+                        },
+                        templates: None,
+                    })],
+                    commas: vec![],
+                },
+                greater_than: 0,
+            },
+        );
+
+        assert_eq!(vec.to_string(), "vec<Foo>");
+
+        let object = TypeDefinition::Object(Keyword {
+            value: ByteString::from("object"),
+            position: 0,
+        });
+
+        assert_eq!(object.to_string(), "object");
+
+        let mixed = TypeDefinition::Mixed(Keyword {
+            value: ByteString::from("mixed"),
+            position: 0,
+        });
+
+        assert_eq!(mixed.to_string(), "mixed");
+
+        let nonnull = TypeDefinition::NonNull(Keyword {
+            value: ByteString::from("nonnull"),
+            position: 0,
+        });
+
+        assert_eq!(nonnull.to_string(), "nonnull");
+
+        let resource = TypeDefinition::Resource(Keyword {
+            value: ByteString::from("resource"),
+            position: 0,
+        });
+
+        assert_eq!(resource.to_string(), "resource");
+
+        let iterable = TypeDefinition::Iterable(
+            Keyword {
+                value: ByteString::from("iterable"),
+                position: 0,
+            },
+            TypeTemplateGroupDefinition {
+                comments: CommentGroup { comments: vec![] },
+                less_than: 0,
+                members: CommaSeparated {
+                    inner: vec![TypeDefinition::Identifier(TemplatedIdentifier {
+                        name: Identifier {
+                            position: 0,
+                            value: ByteString::from("Foo"),
+                        },
+                        templates: None,
+                    })],
+                    commas: vec![],
+                },
+                greater_than: 0,
+            },
+        );
+
+        assert_eq!(iterable.to_string(), "iterable<Foo>");
+
+        let class = TypeDefinition::Class(
+            Keyword {
+                value: ByteString::from("class"),
+                position: 0,
+            },
+            TypeTemplateGroupDefinition {
+                comments: CommentGroup { comments: vec![] },
+                less_than: 0,
+                members: CommaSeparated {
+                    inner: vec![TypeDefinition::Identifier(TemplatedIdentifier {
+                        name: Identifier {
+                            position: 0,
+                            value: ByteString::from("Foo"),
+                        },
+                        templates: None,
+                    })],
+                    commas: vec![],
+                },
+                greater_than: 0,
+            },
+        );
+
+        assert_eq!(class.to_string(), "class<Foo>");
+
+        let interface = TypeDefinition::Interface(
+            Keyword {
+                value: ByteString::from("interface"),
+                position: 0,
+            },
+            TypeTemplateGroupDefinition {
+                comments: CommentGroup { comments: vec![] },
+                less_than: 0,
+                members: CommaSeparated {
+                    inner: vec![TypeDefinition::Identifier(TemplatedIdentifier {
+                        name: Identifier {
+                            position: 0,
+                            value: ByteString::from("Foo"),
+                        },
+                        templates: None,
+                    })],
+                    commas: vec![],
+                },
+                greater_than: 0,
+            },
+        );
+
+        assert_eq!(interface.to_string(), "interface<Foo>");
+
+        let tuple = TypeDefinition::Tuple {
+            left_parenthesis: 0,
+            type_definitions: CommaSeparated {
+                inner: vec![
+                    TypeDefinition::Identifier(TemplatedIdentifier {
+                        name: Identifier {
+                            position: 0,
+                            value: ByteString::from("Foo"),
+                        },
+                        templates: None,
+                    }),
+                    TypeDefinition::Identifier(TemplatedIdentifier {
+                        name: Identifier {
+                            position: 0,
+                            value: ByteString::from("Bar"),
+                        },
+                        templates: None,
+                    }),
+                ],
+                commas: vec![0],
+            },
+            right_parenthesis: 0,
+        };
+
+        assert_eq!(tuple.to_string(), "(Foo, Bar)");
+
+        let parenthesized = TypeDefinition::Parenthesized {
+            left_parenthesis: 0,
+            type_definition: Box::new(TypeDefinition::Identifier(TemplatedIdentifier {
+                name: Identifier {
+                    position: 0,
+                    value: ByteString::from("Foo"),
+                },
+                templates: None,
+            })),
+            right_parenthesis: 0,
+        };
+
+        assert_eq!(parenthesized.to_string(), "(Foo)");
+    }
 }
