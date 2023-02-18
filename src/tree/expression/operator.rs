@@ -3341,4 +3341,53 @@ mod tests {
 
         assert_eq!(r#as.to_string(), "$foo as i64");
     }
+
+    #[test]
+    fn test_generator_operation_expression_display() {
+        let r#yield = GeneratorOperationExpression::Yield {
+            comments: CommentGroup { comments: vec![] },
+            r#yield: Keyword::new(ByteString::from("yield"), 0),
+        };
+
+        assert_eq!(r#yield.to_string(), "yield");
+
+        let yield_value = GeneratorOperationExpression::YieldValue {
+            comments: CommentGroup { comments: vec![] },
+            r#yield: Keyword::new(ByteString::from("yield"), 0),
+            value: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+        };
+
+        assert_eq!(yield_value.to_string(), "yield $foo");
+
+        let yield_key_value = GeneratorOperationExpression::YieldKeyValue {
+            comments: CommentGroup { comments: vec![] },
+            r#yield: Keyword::new(ByteString::from("yield"), 0),
+            key: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            double_arrow: 0,
+            value: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(yield_key_value.to_string(), "yield $foo => $bar");
+
+        let yield_from = GeneratorOperationExpression::YieldFrom {
+            comments: CommentGroup { comments: vec![] },
+            r#yield: Keyword::new(ByteString::from("yield"), 0),
+            from: Keyword::new(ByteString::from("from"), 0),
+            value: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+        };
+
+        assert_eq!(yield_from.to_string(), "yield from $foo");
+    }
 }
