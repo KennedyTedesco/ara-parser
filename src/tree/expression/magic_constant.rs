@@ -74,3 +74,18 @@ impl std::fmt::Display for MagicConstant {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::expression::magic_constant::MagicConstant;
+
+    #[test]
+    fn test_magic_constant_display() {
+        let magic_constant = MagicConstant::Directory {
+            position: 0,
+            value: ByteString::from("__DIR__"),
+        };
+        assert_eq!(magic_constant.to_string(), "__DIR__");
+    }
+}
