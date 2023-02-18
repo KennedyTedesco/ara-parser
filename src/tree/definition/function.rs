@@ -549,12 +549,6 @@ impl std::fmt::Display for MethodParameterListDefinition {
     }
 }
 
-impl std::fmt::Display for MethodParameterDefaultValueDefinition {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.value)
-    }
-}
-
 impl std::fmt::Display for MethodTypeConstraintDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
