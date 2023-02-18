@@ -15,14 +15,12 @@ pub struct CommaSeparated<T: Node> {
 
 impl<T: Node + std::fmt::Display> std::fmt::Display for CommaSeparated<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        let mut first = true;
-        for node in self.inner.iter() {
-            if first {
-                first = false;
-            } else {
-                write!(f, ",")?;
-            }
+        for (index, node) in self.inner.iter().enumerate() {
             write!(f, "{}", node)?;
+
+            if index < self.inner.len() - 1 {
+                write!(f, ", ")?;
+            }
         }
         Ok(())
     }

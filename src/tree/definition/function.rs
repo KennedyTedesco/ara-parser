@@ -466,3 +466,56 @@ impl Node for MethodDefinition {
         "concrete method definition".to_string()
     }
 }
+
+impl std::fmt::Display for FunctionLikeReturnTypeDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, ": {}", self.type_definition)
+    }
+}
+
+impl std::fmt::Display for FunctionLikeParameterDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let default_value = self
+            .default
+            .as_ref()
+            .map_or(String::new(), |value| value.to_string());
+
+        write!(
+            f,
+            "{}{}{}",
+            self.type_definition,
+            self.ellipsis.map_or(String::new(), |_| "...".to_string()),
+            self.variable,
+        )?;
+
+        if !default_value.is_empty() {
+            write!(f, " = {}", default_value)?;
+        }
+
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for FunctionLikeParameterListDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "(")?;
+
+        for (index, parameter) in self.parameters.inner.iter().enumerate() {
+            write!(f, "{}", parameter)?;
+
+            if index < self.parameters.inner.len() - 1 {
+                write!(f, ", ")?;
+            }
+        }
+
+        write!(f, ")")?;
+
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for FunctionLikeParameterDefaultValueDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
