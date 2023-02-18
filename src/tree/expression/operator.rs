@@ -2089,19 +2089,17 @@ impl std::fmt::Display for RangeOperationExpression {
             Self::BetweenInclusive { from, to, .. } => {
                 write!(f, "{}..={}", from, to)
             }
-            Self::To { double_dot, to, .. } => {
-                write!(f, "..{}{}", double_dot, to)
+            Self::To { to, .. } => {
+                write!(f, "..{}", to)
             }
             Self::ToInclusive { to, .. } => {
                 write!(f, "..={}", to)
             }
-            Self::From {
-                from, double_dot, ..
-            } => {
-                write!(f, "{}{}..", from, double_dot)
+            Self::From { from, .. } => {
+                write!(f, "{}..", from)
             }
-            Self::Full { double_dot, .. } => {
-                write!(f, "{}..", double_dot)
+            Self::Full { .. } => {
+                write!(f, "..")
             }
         }
     }
@@ -3833,5 +3831,87 @@ mod tests {
         };
 
         assert_eq!(concurrently.to_string(), "concurrently {{ /* ... */ }}");
+    }
+
+    #[test]
+    fn test_range_operation_expression() {
+        let between = RangeOperationExpression::Between {
+            comments: CommentGroup { comments: vec![] },
+            from: Box::new(Expression::Literal(Integer(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("1"),
+            }))),
+            double_dot: 0,
+            to: Box::new(Expression::Literal(Integer(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("10"),
+            }))),
+        };
+
+        assert_eq!(between.to_string(), "1..10");
+
+        let between_inclusive = RangeOperationExpression::BetweenInclusive {
+            comments: CommentGroup { comments: vec![] },
+            from: Box::new(Expression::Literal(Integer(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("1"),
+            }))),
+            double_dot: 0,
+            to: Box::new(Expression::Literal(Integer(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("10"),
+            }))),
+            equals: 0,
+        };
+
+        assert_eq!(between_inclusive.to_string(), "1..=10");
+
+        let to = RangeOperationExpression::To {
+            comments: CommentGroup { comments: vec![] },
+            double_dot: 0,
+            to: Box::new(Expression::Literal(Integer(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("10"),
+            }))),
+        };
+
+        assert_eq!(to.to_string(), "..10");
+
+        let to_inclusive = RangeOperationExpression::ToInclusive {
+            comments: CommentGroup { comments: vec![] },
+            double_dot: 0,
+            to: Box::new(Expression::Literal(Integer(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("10"),
+            }))),
+            equals: 0,
+        };
+
+        assert_eq!(to_inclusive.to_string(), "..=10");
+
+        let from = RangeOperationExpression::From {
+            comments: CommentGroup { comments: vec![] },
+            from: Box::new(Expression::Literal(Integer(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("10"),
+            }))),
+            double_dot: 0,
+        };
+
+        assert_eq!(from.to_string(), "10..");
+
+        let full = RangeOperationExpression::Full {
+            comments: CommentGroup { comments: vec![] },
+            double_dot: 0,
+        };
+
+        assert_eq!(full.to_string(), "..");
     }
 }
