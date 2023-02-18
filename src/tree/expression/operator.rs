@@ -2345,7 +2345,7 @@ impl std::fmt::Display for ClassOperationExpression {
                 write!(f, "{}", arguments)
             }
             Self::AnonymousInitialization { class, .. } => write!(f, "new {}", class),
-            ClassOperationExpression::StaticMethodCall {
+            Self::StaticMethodCall {
                 class,
                 method,
                 generics,
@@ -2358,7 +2358,7 @@ impl std::fmt::Display for ClassOperationExpression {
                 }
                 write!(f, "{}", arguments)
             }
-            ClassOperationExpression::StaticMethodClosureCreation {
+            Self::StaticMethodClosureCreation {
                 class,
                 method,
                 generics,
@@ -2371,15 +2371,46 @@ impl std::fmt::Display for ClassOperationExpression {
                 }
                 write!(f, "{}", placeholder)
             }
-            ClassOperationExpression::StaticPropertyFetch {
+            Self::StaticPropertyFetch {
                 class, property, ..
             } => {
                 write!(f, "{}::{}", class, property)
             }
-            ClassOperationExpression::ConstantFetch {
+            Self::ConstantFetch {
                 class, constant, ..
             } => {
                 write!(f, "{}::{}", class, constant)
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for FunctionOperationExpression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self {
+            Self::Call {
+                function,
+                generics,
+                arguments,
+                ..
+            } => {
+                write!(f, "{}", function)?;
+                if let Some(generics) = generics {
+                    write!(f, "{}", generics)?;
+                }
+                write!(f, "{}", arguments)
+            }
+            Self::ClosureCreation {
+                function,
+                generics,
+                placeholder,
+                ..
+            } => {
+                write!(f, "{}", function)?;
+                if let Some(generics) = generics {
+                    write!(f, "{}", generics)?;
+                }
+                write!(f, "{}", placeholder)
             }
         }
     }
