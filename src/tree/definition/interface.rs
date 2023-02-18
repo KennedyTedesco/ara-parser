@@ -189,7 +189,7 @@ impl std::fmt::Display for InterfaceDefinition {
             write!(f, "{}", extends)?;
         }
 
-        write!(f, "{}", self.body)
+        write!(f, " {}", self.body)
     }
 }
 
@@ -201,7 +201,7 @@ impl std::fmt::Display for InterfaceDefinitionExtends {
 
 impl std::fmt::Display for InterfaceDefinitionBody {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, " {{ /* ... */ }}")
+        write!(f, "{{ /* ... */ }}")
     }
 }
 
