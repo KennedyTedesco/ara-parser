@@ -198,3 +198,119 @@ impl std::fmt::Display for TupleExpression {
         write!(f, "({})", self.elements)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::expression::literal::Literal::Integer;
+    use crate::tree::expression::literal::Literal::String;
+    use crate::tree::expression::literal::LiteralInteger;
+    use crate::tree::expression::literal::LiteralString;
+    use crate::tree::expression::Expression;
+
+    #[test]
+    fn test_vec_expression_display() {
+        let vec_expression = VecExpression {
+            comments: CommentGroup { comments: vec![] },
+            vec: Keyword::new(ByteString::from("vec"), 0),
+            left_bracket: 0,
+            elements: CommaSeparated {
+                inner: vec![
+                    VecElementExpression {
+                        value: Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("1"),
+                        })),
+                    },
+                    VecElementExpression {
+                        value: Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("2"),
+                        })),
+                    },
+                ],
+                commas: vec![],
+            },
+            right_bracket: 0,
+        };
+
+        assert_eq!(vec_expression.to_string(), "vec[1, 2]");
+    }
+
+    #[test]
+    fn test_dict_expression_display() {
+        let dict_expression = DictExpression {
+            comments: CommentGroup { comments: vec![] },
+            dict: Keyword::new(ByteString::from("dict"), 0),
+            left_bracket: 0,
+            elements: CommaSeparated {
+                inner: vec![
+                    DictElementExpression {
+                        key: Expression::Literal(String(LiteralString {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("\"a\""),
+                        })),
+                        double_arrow: 0,
+                        value: Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("1"),
+                        })),
+                    },
+                    DictElementExpression {
+                        key: Expression::Literal(String(LiteralString {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("\"b\""),
+                        })),
+                        double_arrow: 0,
+                        value: Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("2"),
+                        })),
+                    },
+                ],
+                commas: vec![],
+            },
+            right_bracket: 0,
+        };
+
+        assert_eq!(dict_expression.to_string(), "dict[\"a\" => 1, \"b\" => 2]");
+    }
+
+    #[test]
+    fn test_tuple_expression_display() {
+        let tuple_expression = TupleExpression {
+            comments: CommentGroup { comments: vec![] },
+            left_parenthesis: 0,
+            elements: CommaSeparated {
+                inner: vec![
+                    Expression::Literal(Integer(LiteralInteger {
+                        comments: CommentGroup { comments: vec![] },
+                        position: 0,
+                        value: ByteString::from("1"),
+                    })),
+                    Expression::Literal(Integer(LiteralInteger {
+                        comments: CommentGroup { comments: vec![] },
+                        position: 0,
+                        value: ByteString::from("2"),
+                    })),
+                    Expression::Literal(Integer(LiteralInteger {
+                        comments: CommentGroup { comments: vec![] },
+                        position: 0,
+                        value: ByteString::from("3"),
+                    })),
+                ],
+                commas: vec![],
+            },
+            right_parenthesis: 0,
+        };
+
+        assert_eq!(tuple_expression.to_string(), "(1, 2, 3)");
+    }
+}
