@@ -125,7 +125,7 @@ mod tests {
                                     value: Expression::Literal(Integer(LiteralInteger {
                                         comments: CommentGroup { comments: vec![] },
                                         position: 0,
-                                        value: ByteString::from("1"),
+                                        value: ByteString::from("2"),
                                     })),
                                 }],
                                 commas: vec![],
@@ -139,6 +139,6 @@ mod tests {
             right_bracket: 32,
         };
 
-        assert_eq!(attribute_group_definition.to_string(), "#[Foo, Bar(1)]");
+        assert_eq!(attribute_group_definition.to_string(), "#[Foo, Bar(2)]");
     }
 }
