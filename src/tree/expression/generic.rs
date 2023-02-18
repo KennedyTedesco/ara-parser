@@ -39,3 +39,45 @@ impl std::fmt::Display for GenericGroupExpression {
         write!(f, "::<{}>", self.types)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::definition::r#type::TypeDefinition;
+    use crate::tree::expression::generic::GenericGroupExpression;
+    use crate::tree::identifier::Identifier;
+    use crate::tree::identifier::TemplatedIdentifier;
+    use crate::tree::utils::CommaSeparated;
+
+    #[test]
+    fn test_generic_group_expression_display() {
+        let generic_group_expression = GenericGroupExpression {
+            double_colon_less_than: 0,
+            types: CommaSeparated {
+                inner: vec![
+                    TypeDefinition::Identifier(TemplatedIdentifier {
+                        name: Identifier {
+                            position: 3,
+                            value: ByteString::from("T"),
+                        },
+                        templates: None,
+                    }),
+                    TypeDefinition::Identifier(TemplatedIdentifier {
+                        name: Identifier {
+                            position: 3,
+                            value: ByteString::from("P"),
+                        },
+                        templates: None,
+                    }),
+                ],
+                commas: vec![],
+            },
+            greater_than: 0,
+        };
+
+        assert_eq!(
+            format!("{}", generic_group_expression),
+            "::<T, P>".to_string()
+        );
+    }
+}
