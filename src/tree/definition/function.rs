@@ -498,24 +498,24 @@ impl std::fmt::Display for FunctionLikeParameterDefinition {
 
 impl std::fmt::Display for FunctionLikeParameterListDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "(")?;
-
-        for (index, parameter) in self.parameters.inner.iter().enumerate() {
-            write!(f, "{}", parameter)?;
-
-            if index < self.parameters.inner.len() - 1 {
-                write!(f, ", ")?;
-            }
-        }
-
-        write!(f, ")")?;
-
-        Ok(())
+        write!(f, "({})", self.parameters)
     }
 }
 
 impl std::fmt::Display for FunctionLikeParameterDefaultValueDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
+    }
+}
+
+impl std::fmt::Display for FunctionDefinition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {}", self.function, self.name)?;
+
+        if let Some(templates) = &self.templates {
+            write!(f, "{}", templates)?;
+        }
+
+        write!(f, "{} {} {}", self.parameters, self.return_type, self.body)
     }
 }
