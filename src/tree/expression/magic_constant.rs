@@ -77,8 +77,8 @@ impl std::fmt::Display for MagicConstant {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::lexer::byte_string::ByteString;
-    use crate::tree::expression::magic_constant::MagicConstant;
 
     #[test]
     fn test_magic_constant_display() {

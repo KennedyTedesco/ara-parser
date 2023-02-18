@@ -42,12 +42,10 @@ impl std::fmt::Display for GenericGroupExpression {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::lexer::byte_string::ByteString;
-    use crate::tree::definition::r#type::TypeDefinition;
-    use crate::tree::expression::generic::GenericGroupExpression;
     use crate::tree::identifier::Identifier;
     use crate::tree::identifier::TemplatedIdentifier;
-    use crate::tree::utils::CommaSeparated;
 
     #[test]
     fn test_generic_group_expression_display() {
