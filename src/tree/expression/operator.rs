@@ -2912,4 +2912,142 @@ mod tests {
 
         assert_eq!(bitwise_right_shift.to_string(), "$foo >> $bar");
     }
+
+    #[test]
+    fn test_comparison_operation_expression_display() {
+        let equal = ComparisonOperationExpression::Equal {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            double_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(equal.to_string(), "$foo == $bar");
+
+        let identical = ComparisonOperationExpression::Identical {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            triple_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(identical.to_string(), "$foo === $bar");
+
+        let not_equal = ComparisonOperationExpression::NotEqual {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            bang_equals: 0,
+        };
+
+        assert_eq!(not_equal.to_string(), "$foo != $bar");
+
+        let not_identical = ComparisonOperationExpression::NotIdentical {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            bang_double_equals: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(not_identical.to_string(), "$foo !== $bar");
+
+        let less_than = ComparisonOperationExpression::LessThan {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            less_than: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(less_than.to_string(), "$foo < $bar");
+
+        let greater_than = ComparisonOperationExpression::GreaterThan {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            greater_than: 0,
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+        };
+
+        assert_eq!(greater_than.to_string(), "$foo > $bar");
+
+        let less_than_or_equal = ComparisonOperationExpression::LessThanOrEqual {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            less_than_equals: 0,
+        };
+
+        assert_eq!(less_than_or_equal.to_string(), "$foo <= $bar");
+
+        let greater_than_or_equal = ComparisonOperationExpression::GreaterThanOrEqual {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            greater_than_equals: 0,
+        };
+
+        assert_eq!(greater_than_or_equal.to_string(), "$foo >= $bar");
+
+        let spaceship = ComparisonOperationExpression::Spaceship {
+            comments: CommentGroup { comments: vec![] },
+            left: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("foo"),
+            })),
+            right: Box::new(Expression::Variable(Variable {
+                position: 0,
+                name: ByteString::from("bar"),
+            })),
+            spaceship: 0,
+        };
+
+        assert_eq!(spaceship.to_string(), "$foo <=> $bar");
+    }
 }
