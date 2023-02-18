@@ -122,3 +122,39 @@ impl std::fmt::Display for ClassishConstantDefinition {
         )
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::definition::r#type::SignedIntegerTypeDefinition;
+    use crate::tree::expression::literal::Literal::Integer;
+    use crate::tree::expression::literal::LiteralInteger;
+
+    #[test]
+    fn test_constant_definition_display() {
+        let constant_definition = ConstantDefinition {
+            comments: CommentGroup { comments: vec![] },
+            r#const: Keyword::new(ByteString::from("const"), 0),
+            type_definition: TypeDefinition::SignedInteger(SignedIntegerTypeDefinition::I64(
+                Keyword::new(ByteString::from("i64"), 15),
+            )),
+            name: Identifier {
+                position: 0,
+                value: ByteString::from("FOO"),
+            },
+            equals: 0,
+            value: Expression::Literal(Integer(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("1"),
+            })),
+            semicolon: 0,
+        };
+
+        assert_eq!(
+            constant_definition.to_string(),
+            "const i64 FOO = 1;".to_string()
+        );
+    }
+}
