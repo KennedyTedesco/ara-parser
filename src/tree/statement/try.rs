@@ -171,13 +171,15 @@ impl std::fmt::Display for TryCatchTypeStatement {
         match &self {
             Self::Identifier(identifier) => write!(f, "{}", identifier),
             Self::Union(identifiers) => {
-                for (index, identifier) in identifiers.iter().enumerate() {
-                    if index > 0 {
-                        write!(f, " | ")?;
-                    }
-                    write!(f, "{}", identifier)?;
-                }
-                Ok(())
+                write!(
+                    f,
+                    "{}",
+                    identifiers
+                        .iter()
+                        .map(|identifier| identifier.to_string())
+                        .collect::<Vec<String>>()
+                        .join(" | ")
+                )
             }
         }
     }
