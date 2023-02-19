@@ -74,11 +74,15 @@ impl Node for ReturnStatement {
 impl std::fmt::Display for ReturnStatement {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
-            Self::Explicit { expression, .. } => {
+            Self::Explicit {
+                r#return,
+                expression,
+                ..
+            } => {
                 if let Some(expression) = expression {
-                    write!(f, "return {};", expression)
+                    write!(f, "{} {};", r#return, expression)
                 } else {
-                    write!(f, "return;")
+                    write!(f, "{};", r#return)
                 }
             }
             Self::Implicit { expression, .. } => write!(f, "{}", expression),

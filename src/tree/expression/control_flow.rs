@@ -137,7 +137,7 @@ impl Node for MatchArmConditionExpression {
 
 impl std::fmt::Display for MatchExpression {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "match ")?;
+        write!(f, "{} ", self.r#match)?;
         if let Some(expression) = &self.expression {
             write!(f, "{} ", expression)?;
         }

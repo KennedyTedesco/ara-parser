@@ -382,7 +382,11 @@ impl Node for TypeDefinition {
 
 impl std::fmt::Display for TypeAliasDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "type {} = {};", self.name, self.type_definition,)
+        write!(
+            f,
+            "{} {} = {};",
+            self.r#type, self.name, self.type_definition,
+        )
     }
 }
 

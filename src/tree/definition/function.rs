@@ -477,7 +477,7 @@ impl std::fmt::Display for FunctionLikeParameterDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.type_definition)?;
 
-        if let Some(_) = self.ellipsis {
+        if self.ellipsis.is_some() {
             write!(f, "...")?;
         }
 
@@ -547,7 +547,7 @@ impl std::fmt::Display for MethodTypeConstraintDefinition {
 
 impl std::fmt::Display for MethodTypeConstraintGroupDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "where {}", self.constraints)
+        write!(f, "{} {}", self.r#where, self.constraints)
     }
 }
 

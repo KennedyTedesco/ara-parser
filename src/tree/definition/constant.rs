@@ -107,8 +107,8 @@ impl std::fmt::Display for ConstantDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "const {} {} = {};",
-            self.type_definition, self.name, self.value
+            "{} {} {} = {};",
+            self.r#const, self.type_definition, self.name, self.value
         )
     }
 }
@@ -117,8 +117,8 @@ impl std::fmt::Display for ClassishConstantDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{} const {} {} = {};",
-            self.modifiers, self.type_definition, self.name, self.value
+            "{} {} {} {} = {};",
+            self.modifiers, self.r#const, self.type_definition, self.name, self.value
         )
     }
 }

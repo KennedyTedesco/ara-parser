@@ -235,7 +235,7 @@ impl std::fmt::Display for ClassDefinitionExtends {
 
 impl std::fmt::Display for ClassDefinitionImplements {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "implements {}", self.interfaces)
+        write!(f, "{} {}", self.implements, self.interfaces)
     }
 }
 
@@ -257,7 +257,7 @@ impl std::fmt::Display for ClassDefinitionBody {
 
 impl std::fmt::Display for ClassDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} class {}", self.modifiers, self.name)?;
+        write!(f, "{} {} {}", self.modifiers, self.class, self.name)?;
 
         if let Some(templates) = &self.templates {
             write!(f, " {}", templates)?;
