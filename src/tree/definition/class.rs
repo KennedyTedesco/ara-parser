@@ -229,7 +229,7 @@ impl Node for ClassDefinitionMember {
 
 impl std::fmt::Display for ClassDefinitionExtends {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "extends {}", self.parent)
+        write!(f, "{} {}", self.extends, self.parent)
     }
 }
 
