@@ -306,9 +306,13 @@ impl std::fmt::Display for IfElseBlockStatement {
 mod tests {
     use super::*;
     use crate::lexer::byte_string::ByteString;
+    use crate::tree::expression::argument::ArgumentExpression;
+    use crate::tree::expression::argument::ArgumentListExpression;
     use crate::tree::expression::literal::Literal::Integer;
     use crate::tree::expression::literal::LiteralInteger;
     use crate::tree::expression::operator::ComparisonOperationExpression;
+    use crate::tree::expression::operator::FunctionOperationExpression;
+    use crate::tree::identifier::Identifier;
 
     #[test]
     pub fn test_if_statement_display() {
@@ -481,6 +485,79 @@ mod tests {
         assert_eq!(
             if_else_if.to_string(),
             "if $foo < 10 { /* ... */ } else if $foo < 10 { /* ... */ } else { /* ... */ }"
+        );
+    }
+
+    #[test]
+    pub fn test_using_statement_display() {
+        let using = UsingStatement {
+            comments: CommentGroup { comments: vec![] },
+            r#using: Keyword::new(ByteString::from("using"), 0),
+            assignments: CommaSeparated {
+                inner: vec![UsingAssignmentStatement {
+                    comments: CommentGroup { comments: vec![] },
+                    variable: Variable {
+                        position: 0,
+                        name: ByteString::from("foo"),
+                    },
+                    equals: 0,
+                    expression: Expression::FunctionOperation(FunctionOperationExpression::Call {
+                        comments: CommentGroup { comments: vec![] },
+                        function: Box::new(Expression::Identifier(Identifier {
+                            position: 0,
+                            value: ByteString::from("bar"),
+                        })),
+                        generics: None,
+                        arguments: ArgumentListExpression {
+                            comments: CommentGroup { comments: vec![] },
+                            left_parenthesis: 0,
+                            arguments: CommaSeparated {
+                                inner: vec![ArgumentExpression::Value {
+                                    comments: CommentGroup { comments: vec![] },
+                                    value: Expression::Literal(Integer(LiteralInteger {
+                                        comments: CommentGroup { comments: vec![] },
+                                        position: 0,
+                                        value: ByteString::from("1"),
+                                    })),
+                                }],
+                                commas: vec![],
+                            },
+                            right_parenthesis: 0,
+                        },
+                    }),
+                }],
+                commas: vec![],
+            },
+            block: BlockStatement {
+                comments: CommentGroup { comments: vec![] },
+                left_brace: 0,
+                statements: vec![],
+                right_brace: 0,
+            },
+            if_clause: Some(UsingIfClauseStatement {
+                comments: CommentGroup { comments: vec![] },
+                r#if: Keyword::new(ByteString::from("if"), 0),
+                condition: Expression::ComparisonOperation(
+                    ComparisonOperationExpression::LessThan {
+                        comments: CommentGroup { comments: vec![] },
+                        left: Box::from(Expression::Variable(Variable {
+                            position: 0,
+                            name: ByteString::from("foo"),
+                        })),
+                        right: Box::from(Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("10"),
+                        }))),
+                        less_than: 0,
+                    },
+                ),
+            }),
+        };
+
+        assert_eq!(
+            using.to_string(),
+            "using $foo = bar(1) if $foo < 10 { /* ... */ }"
         );
     }
 }
