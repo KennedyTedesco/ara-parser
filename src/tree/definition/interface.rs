@@ -219,9 +219,9 @@ mod tests {
     use super::*;
     use crate::lexer::byte_string::ByteString;
     use crate::tree::definition::r#type::TypeDefinition;
-    use crate::tree::definition::template::{
-        TemplateDefinition, TemplateDefinitionTypeConstraint, TemplateDefinitionVariance,
-    };
+    use crate::tree::definition::template::TemplateDefinition;
+    use crate::tree::definition::template::TemplateDefinitionTypeConstraint;
+    use crate::tree::definition::template::TemplateDefinitionVariance;
 
     #[test]
     pub fn test_interface_definition_display() {
