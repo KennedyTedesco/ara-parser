@@ -952,4 +952,54 @@ mod tests {
             "do { /* ... */ } while $foo < 10;"
         );
     }
+
+    #[test]
+    pub fn test_continue_statement_display() {
+        let continue_statement = ContinueStatement {
+            r#continue: Keyword::new(ByteString::from("continue"), 0),
+            level: None,
+            semicolon: 0,
+            comments: CommentGroup { comments: vec![] },
+        };
+
+        assert_eq!(continue_statement.to_string(), "continue;");
+
+        let continue_statement_with_level = ContinueStatement {
+            r#continue: Keyword::new(ByteString::from("continue"), 0),
+            level: Some(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("2"),
+            }),
+            semicolon: 0,
+            comments: CommentGroup { comments: vec![] },
+        };
+
+        assert_eq!(continue_statement_with_level.to_string(), "continue 2;");
+    }
+
+    #[test]
+    pub fn test_break_statement_display() {
+        let break_statement = BreakStatement {
+            r#break: Keyword::new(ByteString::from("break"), 0),
+            level: None,
+            semicolon: 0,
+            comments: CommentGroup { comments: vec![] },
+        };
+
+        assert_eq!(break_statement.to_string(), "break;");
+
+        let break_statement_with_level = BreakStatement {
+            r#break: Keyword::new(ByteString::from("break"), 0),
+            level: Some(LiteralInteger {
+                comments: CommentGroup { comments: vec![] },
+                position: 0,
+                value: ByteString::from("2"),
+            }),
+            semicolon: 0,
+            comments: CommentGroup { comments: vec![] },
+        };
+
+        assert_eq!(break_statement_with_level.to_string(), "break 2;");
+    }
 }
