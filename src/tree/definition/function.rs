@@ -517,7 +517,7 @@ impl std::fmt::Display for FunctionDefinition {
             write!(f, "{}", templates)?;
         }
 
-        write!(f, "{} {} {}", self.parameters, self.return_type, self.body)
+        write!(f, "{}{} {}", self.parameters, self.return_type, self.body)
     }
 }
 
@@ -595,5 +595,67 @@ impl std::fmt::Display for MethodDefinition {
         }
 
         write!(f, "{}", self.body)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::definition::r#type::SignedIntegerTypeDefinition;
+
+    #[test]
+    fn test_function_definition_display() {
+        let function_definition = FunctionDefinition {
+            function: Keyword::new(ByteString::from("function"), 0),
+            name: Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            },
+            templates: None,
+            parameters: FunctionLikeParameterListDefinition {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                parameters: CommaSeparated {
+                    inner: vec![FunctionLikeParameterDefinition {
+                        attributes: vec![],
+                        comments: CommentGroup { comments: vec![] },
+                        type_definition: TypeDefinition::SignedInteger(
+                            SignedIntegerTypeDefinition::I32(Keyword::new(
+                                ByteString::from("i32"),
+                                15,
+                            )),
+                        ),
+                        ellipsis: None,
+                        variable: Variable {
+                            position: 0,
+                            name: ByteString::from("foo"),
+                        },
+                        default: None,
+                    }],
+                    commas: vec![],
+                },
+                right_parenthesis: 0,
+            },
+            return_type: FunctionLikeReturnTypeDefinition {
+                colon: 0,
+                type_definition: TypeDefinition::SignedInteger(SignedIntegerTypeDefinition::I64(
+                    Keyword::new(ByteString::from("i64"), 15),
+                )),
+            },
+            body: BlockStatement {
+                comments: CommentGroup { comments: vec![] },
+                left_brace: 0,
+                statements: vec![],
+                right_brace: 0,
+            },
+            comments: CommentGroup { comments: vec![] },
+            attributes: vec![],
+        };
+
+        assert_eq!(
+            function_definition.to_string(),
+            "function Foo(i32 $foo): i64 { /* ... */ }"
+        );
     }
 }
