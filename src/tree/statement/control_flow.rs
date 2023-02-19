@@ -236,3 +236,251 @@ impl Node for UsingIfClauseStatement {
         "using if clause statement".to_string()
     }
 }
+
+impl std::fmt::Display for IfElseStatement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {}", self.r#else, self.block)
+    }
+}
+
+impl std::fmt::Display for IfElseIfStatement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {} {}", self.elseif, self.condition, self.block)
+    }
+}
+
+impl std::fmt::Display for IfStatement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {} {}", self.r#if, self.conditions, self.block)?;
+
+        for elseif in &self.elseifs {
+            write!(f, " {}", elseif)?;
+        }
+
+        if let Some(r#else) = &self.r#else {
+            write!(f, " {}", r#else)?;
+        }
+
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for UsingStatement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} ", self.r#using)?;
+
+        for assignment in &self.assignments.inner {
+            write!(f, "{} ", assignment)?;
+        }
+
+        if let Some(if_clause) = &self.if_clause {
+            write!(f, "{} ", if_clause)?;
+        }
+
+        write!(f, "{}", self.block)
+    }
+}
+
+impl std::fmt::Display for UsingAssignmentStatement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} = {}", self.variable, self.expression)
+    }
+}
+
+impl std::fmt::Display for UsingIfClauseStatement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {}", self.r#if, self.condition)
+    }
+}
+
+impl std::fmt::Display for IfElseBlockStatement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            IfElseBlockStatement::If(r#if) => write!(f, "{}", r#if),
+            IfElseBlockStatement::Block(block) => write!(f, "{}", block),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::expression::literal::Literal::Integer;
+    use crate::tree::expression::literal::LiteralInteger;
+    use crate::tree::expression::operator::ComparisonOperationExpression;
+
+    #[test]
+    pub fn test_if_statement_display() {
+        let r#if = IfStatement {
+            comments: CommentGroup { comments: vec![] },
+            r#if: Keyword::new(ByteString::from("if"), 0),
+            conditions: CommaSeparated {
+                inner: vec![Expression::ComparisonOperation(
+                    ComparisonOperationExpression::LessThan {
+                        comments: CommentGroup { comments: vec![] },
+                        left: Box::from(Expression::Variable(Variable {
+                            position: 0,
+                            name: ByteString::from("foo"),
+                        })),
+                        right: Box::from(Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("10"),
+                        }))),
+                        less_than: 0,
+                    },
+                )],
+                commas: vec![],
+            },
+            block: BlockStatement {
+                comments: CommentGroup { comments: vec![] },
+                left_brace: 0,
+                statements: vec![],
+                right_brace: 0,
+            },
+            elseifs: vec![],
+            r#else: None,
+        };
+
+        assert_eq!(r#if.to_string(), "if $foo < 10 { /* ... */ }");
+
+        let if_elseif = IfStatement {
+            comments: CommentGroup { comments: vec![] },
+            r#if: Keyword::new(ByteString::from("if"), 0),
+            conditions: CommaSeparated {
+                inner: vec![Expression::ComparisonOperation(
+                    ComparisonOperationExpression::LessThan {
+                        comments: CommentGroup { comments: vec![] },
+                        left: Box::from(Expression::Variable(Variable {
+                            position: 0,
+                            name: ByteString::from("foo"),
+                        })),
+                        right: Box::from(Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("10"),
+                        }))),
+                        less_than: 0,
+                    },
+                )],
+                commas: vec![],
+            },
+            block: BlockStatement {
+                comments: CommentGroup { comments: vec![] },
+                left_brace: 0,
+                statements: vec![],
+                right_brace: 0,
+            },
+            elseifs: vec![IfElseIfStatement {
+                comments: CommentGroup { comments: vec![] },
+                elseif: Keyword::new(ByteString::from("elseif"), 0),
+                condition: Expression::ComparisonOperation(
+                    ComparisonOperationExpression::LessThan {
+                        comments: CommentGroup { comments: vec![] },
+                        left: Box::from(Expression::Variable(Variable {
+                            position: 0,
+                            name: ByteString::from("foo"),
+                        })),
+                        right: Box::from(Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("10"),
+                        }))),
+                        less_than: 0,
+                    },
+                ),
+                block: BlockStatement {
+                    comments: CommentGroup { comments: vec![] },
+                    left_brace: 0,
+                    statements: vec![],
+                    right_brace: 0,
+                },
+            }],
+            r#else: None,
+        };
+
+        assert_eq!(
+            if_elseif.to_string(),
+            "if $foo < 10 { /* ... */ } elseif $foo < 10 { /* ... */ }"
+        );
+
+        let if_else_if = IfStatement {
+            comments: CommentGroup { comments: vec![] },
+            r#if: Keyword::new(ByteString::from("if"), 0),
+            conditions: CommaSeparated {
+                inner: vec![Expression::ComparisonOperation(
+                    ComparisonOperationExpression::LessThan {
+                        comments: CommentGroup { comments: vec![] },
+                        left: Box::from(Expression::Variable(Variable {
+                            position: 0,
+                            name: ByteString::from("foo"),
+                        })),
+                        right: Box::from(Expression::Literal(Integer(LiteralInteger {
+                            comments: CommentGroup { comments: vec![] },
+                            position: 0,
+                            value: ByteString::from("10"),
+                        }))),
+                        less_than: 0,
+                    },
+                )],
+                commas: vec![],
+            },
+            block: BlockStatement {
+                comments: CommentGroup { comments: vec![] },
+                left_brace: 0,
+                statements: vec![],
+                right_brace: 0,
+            },
+            elseifs: vec![],
+            r#else: Some(IfElseStatement {
+                comments: CommentGroup { comments: vec![] },
+                r#else: Keyword::new(ByteString::from("else"), 0),
+                block: IfElseBlockStatement::If(Box::from(IfStatement {
+                    comments: CommentGroup { comments: vec![] },
+                    r#if: Keyword::new(ByteString::from("if"), 0),
+                    conditions: CommaSeparated {
+                        inner: vec![Expression::ComparisonOperation(
+                            ComparisonOperationExpression::LessThan {
+                                comments: CommentGroup { comments: vec![] },
+                                left: Box::from(Expression::Variable(Variable {
+                                    position: 0,
+                                    name: ByteString::from("foo"),
+                                })),
+                                right: Box::from(Expression::Literal(Integer(LiteralInteger {
+                                    comments: CommentGroup { comments: vec![] },
+                                    position: 0,
+                                    value: ByteString::from("10"),
+                                }))),
+                                less_than: 0,
+                            },
+                        )],
+                        commas: vec![],
+                    },
+                    block: BlockStatement {
+                        comments: CommentGroup { comments: vec![] },
+                        left_brace: 0,
+                        statements: vec![],
+                        right_brace: 0,
+                    },
+                    elseifs: vec![],
+                    r#else: Some(IfElseStatement {
+                        comments: CommentGroup { comments: vec![] },
+                        r#else: Keyword::new(ByteString::from("else"), 0),
+                        block: IfElseBlockStatement::Block(BlockStatement {
+                            comments: CommentGroup { comments: vec![] },
+                            left_brace: 0,
+                            statements: vec![],
+                            right_brace: 0,
+                        }),
+                    }),
+                })),
+            }),
+        };
+
+        assert_eq!(
+            if_else_if.to_string(),
+            "if $foo < 10 { /* ... */ } else if $foo < 10 { /* ... */ } else { /* ... */ }"
+        );
+    }
+}
