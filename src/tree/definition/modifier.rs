@@ -119,13 +119,11 @@ impl std::fmt::Display for ModifierDefinition {
 
 impl std::fmt::Display for ModifierGroupDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut modifiers = self.modifiers.iter();
-
-        if let Some(modifier) = modifiers.next() {
+        if let Some(modifier) = self.modifiers.first() {
             write!(f, "{}", modifier)?;
         }
 
-        for modifier in modifiers {
+        for modifier in self.modifiers.iter().skip(1) {
             write!(f, " {}", modifier)?;
         }
 

@@ -475,22 +475,16 @@ impl std::fmt::Display for FunctionLikeReturnTypeDefinition {
 
 impl std::fmt::Display for FunctionLikeParameterDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let default_value = self
-            .default
-            .as_ref()
-            .map_or(String::default(), |value| value.to_string());
+        write!(f, "{}", self.type_definition)?;
 
-        write!(
-            f,
-            "{} {}{}",
-            self.type_definition,
-            self.ellipsis
-                .map_or(String::default(), |_| "...".to_string()),
-            self.variable,
-        )?;
+        if let Some(_) = self.ellipsis {
+            write!(f, "...")?;
+        }
 
-        if !default_value.is_empty() {
-            write!(f, " = {}", default_value)?;
+        write!(f, " {}", self.variable)?;
+
+        if let Some(default) = self.default.as_ref() {
+            write!(f, " = {}", default)?;
         }
 
         Ok(())
