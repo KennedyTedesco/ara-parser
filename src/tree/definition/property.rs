@@ -131,3 +131,38 @@ impl std::fmt::Display for PropertyEntryDefinition {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::definition::modifier::ModifierDefinition;
+    use crate::tree::definition::r#type::UnsignedIntegerTypeDefinition;
+    use crate::tree::token::Keyword;
+
+    #[test]
+    pub fn test_property_definition_display() {
+        let property_definition = PropertyDefinition {
+            attributes: vec![],
+            modifiers: ModifierGroupDefinition {
+                position: 0,
+                modifiers: vec![
+                    ModifierDefinition::Public(Keyword::new(ByteString::from("public"), 0)),
+                    ModifierDefinition::Readonly(Keyword::new(ByteString::from("readonly"), 0)),
+                ],
+            },
+            type_definition: TypeDefinition::UnsignedInteger(UnsignedIntegerTypeDefinition::U32(
+                Keyword::new(ByteString::from("u32"), 15),
+            )),
+            entry: PropertyEntryDefinition::Uninitialized {
+                variable: Variable {
+                    position: 0,
+                    name: ByteString::from("foo"),
+                },
+            },
+            semicolon: 0,
+        };
+
+        assert_eq!(property_definition.to_string(), "public readonly u32 $foo;");
+    }
+}
