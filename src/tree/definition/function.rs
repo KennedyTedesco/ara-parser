@@ -523,21 +523,9 @@ impl std::fmt::Display for FunctionDefinition {
 
 impl std::fmt::Display for MethodParameterDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let default_value = self
-            .default
-            .as_ref()
-            .map_or(String::default(), |value| value.to_string());
+        write!(f, "{} {}", self.type_definition, self.variable,)?;
 
-        write!(
-            f,
-            "{}{}{}",
-            self.type_definition,
-            self.ellipsis
-                .map_or(String::default(), |_| "...".to_string()),
-            self.variable,
-        )?;
-
-        if !default_value.is_empty() {
+        if let Some(default_value) = &self.default {
             write!(f, " = {}", default_value)?;
         }
 
@@ -594,7 +582,7 @@ impl std::fmt::Display for MethodDefinition {
             write!(f, "{}", constraints)?;
         }
 
-        write!(f, "{}", self.body)
+        write!(f, " {}", self.body)
     }
 }
 
@@ -602,7 +590,12 @@ impl std::fmt::Display for MethodDefinition {
 mod tests {
     use super::*;
     use crate::lexer::byte_string::ByteString;
+    use crate::tree::definition::modifier::ModifierDefinition;
     use crate::tree::definition::r#type::SignedIntegerTypeDefinition;
+    use crate::tree::definition::template::TemplateDefinition;
+    use crate::tree::definition::template::TemplateDefinitionTypeConstraint;
+    use crate::tree::definition::template::TemplateDefinitionVariance;
+    use crate::tree::identifier::TemplatedIdentifier;
 
     #[test]
     fn test_function_definition_display() {
@@ -656,6 +649,117 @@ mod tests {
         assert_eq!(
             function_definition.to_string(),
             "function Foo(i32 $foo): i64 { /* ... */ }"
+        );
+    }
+
+    #[test]
+    fn test_method_definition_display() {
+        let method_definition = MethodDefinition {
+            modifiers: ModifierGroupDefinition {
+                position: 0,
+                modifiers: vec![ModifierDefinition::Public(Keyword::new(
+                    ByteString::from("public"),
+                    0,
+                ))],
+            },
+            function: Keyword::new(ByteString::from("function"), 0),
+            name: Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            },
+            templates: Some(TemplateGroupDefinition {
+                comments: CommentGroup { comments: vec![] },
+                less_than: 0,
+                members: CommaSeparated {
+                    inner: vec![
+                        TemplateDefinition {
+                            variance: TemplateDefinitionVariance::Invaraint,
+                            name: Identifier {
+                                position: 1,
+                                value: ByteString::from("T"),
+                            },
+                            constraint: TemplateDefinitionTypeConstraint::None,
+                        },
+                        TemplateDefinition {
+                            variance: TemplateDefinitionVariance::Invaraint,
+                            name: Identifier {
+                                position: 1,
+                                value: ByteString::from("U"),
+                            },
+                            constraint: TemplateDefinitionTypeConstraint::None,
+                        },
+                    ],
+                    commas: vec![],
+                },
+                greater_than: 4,
+            }),
+            parameters: MethodParameterListDefinition {
+                comments: CommentGroup { comments: vec![] },
+                left_parenthesis: 0,
+                parameters: CommaSeparated {
+                    inner: vec![
+                        MethodParameterDefinition {
+                            attributes: vec![],
+                            comments: CommentGroup { comments: vec![] },
+                            modifiers: ModifierGroupDefinition {
+                                position: 0,
+                                modifiers: vec![],
+                            },
+                            type_definition: TypeDefinition::Identifier(TemplatedIdentifier {
+                                name: Identifier {
+                                    position: 0,
+                                    value: ByteString::from("T"),
+                                },
+                                templates: None,
+                            }),
+                            ellipsis: None,
+                            variable: Variable {
+                                position: 0,
+                                name: ByteString::from("bar"),
+                            },
+                            default: None,
+                        },
+                        MethodParameterDefinition {
+                            attributes: vec![],
+                            comments: CommentGroup { comments: vec![] },
+                            modifiers: ModifierGroupDefinition {
+                                position: 0,
+                                modifiers: vec![],
+                            },
+                            type_definition: TypeDefinition::Identifier(TemplatedIdentifier {
+                                name: Identifier {
+                                    position: 0,
+                                    value: ByteString::from("U"),
+                                },
+                                templates: None,
+                            }),
+                            ellipsis: None,
+                            variable: Variable {
+                                position: 0,
+                                name: ByteString::from("baz"),
+                            },
+                            default: None,
+                        },
+                    ],
+                    commas: vec![],
+                },
+                right_parenthesis: 0,
+            },
+            return_type: None,
+            constraints: None,
+            body: MethodBodyDefinition::Concrete(BlockStatement {
+                comments: CommentGroup { comments: vec![] },
+                left_brace: 0,
+                statements: vec![],
+                right_brace: 0,
+            }),
+            comments: CommentGroup { comments: vec![] },
+            attributes: vec![],
+        };
+
+        assert_eq!(
+            method_definition.to_string(),
+            "public function Foo<T, U>(T $bar, U $baz) { /* ... */ }"
         );
     }
 }
