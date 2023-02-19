@@ -186,7 +186,7 @@ impl std::fmt::Display for InterfaceDefinition {
         }
 
         if let Some(extends) = &self.extends {
-            write!(f, "{}", extends)?;
+            write!(f, " {}", extends)?;
         }
 
         write!(f, " {}", self.body)
@@ -211,5 +211,79 @@ impl std::fmt::Display for InterfaceDefinitionMember {
             Self::Constant(constant) => write!(f, "{}", constant),
             Self::Method(method) => write!(f, "{}", method),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::byte_string::ByteString;
+    use crate::tree::definition::r#type::TypeDefinition;
+    use crate::tree::definition::template::{
+        TemplateDefinition, TemplateDefinitionTypeConstraint, TemplateDefinitionVariance,
+    };
+
+    #[test]
+    pub fn test_interface_definition_display() {
+        let interface_definition = InterfaceDefinition {
+            comments: CommentGroup { comments: vec![] },
+            attributes: vec![],
+            interface: Keyword::new(ByteString::from("interface"), 0),
+            name: Identifier {
+                position: 0,
+                value: ByteString::from("Foo"),
+            },
+            templates: Some(TemplateGroupDefinition {
+                comments: CommentGroup { comments: vec![] },
+                less_than: 0,
+                members: CommaSeparated {
+                    inner: vec![TemplateDefinition {
+                        variance: TemplateDefinitionVariance::Invaraint,
+                        name: Identifier {
+                            position: 1,
+                            value: ByteString::from("U"),
+                        },
+                        constraint: TemplateDefinitionTypeConstraint::SubType(
+                            Keyword {
+                                value: ByteString::from("as"),
+                                position: 2,
+                            },
+                            TypeDefinition::Identifier(TemplatedIdentifier {
+                                name: Identifier {
+                                    position: 3,
+                                    value: ByteString::from("IFoo"),
+                                },
+                                templates: None,
+                            }),
+                        ),
+                    }],
+                    commas: vec![],
+                },
+                greater_than: 0,
+            }),
+            extends: Some(InterfaceDefinitionExtends {
+                extends: Keyword::new(ByteString::from("extends"), 0),
+                parents: CommaSeparated {
+                    inner: vec![TemplatedIdentifier {
+                        name: Identifier {
+                            position: 0,
+                            value: ByteString::from("Bar"),
+                        },
+                        templates: None,
+                    }],
+                    commas: vec![],
+                },
+            }),
+            body: InterfaceDefinitionBody {
+                left_brace: 0,
+                members: vec![],
+                right_brace: 0,
+            },
+        };
+
+        assert_eq!(
+            interface_definition.to_string(),
+            "interface Foo<U as IFoo> extends Bar { /* ... */ }"
+        );
     }
 }
