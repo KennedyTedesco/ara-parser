@@ -136,13 +136,16 @@ impl std::fmt::Display for PropertyEntryDefinition {
 mod tests {
     use super::*;
     use crate::lexer::byte_string::ByteString;
+    use crate::tree::comment::CommentGroup;
     use crate::tree::definition::modifier::ModifierDefinition;
     use crate::tree::definition::r#type::UnsignedIntegerTypeDefinition;
+    use crate::tree::expression::literal::Literal::Integer;
+    use crate::tree::expression::literal::LiteralInteger;
     use crate::tree::token::Keyword;
 
     #[test]
     pub fn test_property_definition_display() {
-        let property_definition = PropertyDefinition {
+        let uninitialized_property_definition = PropertyDefinition {
             attributes: vec![],
             modifiers: ModifierGroupDefinition {
                 position: 0,
@@ -163,6 +166,41 @@ mod tests {
             semicolon: 0,
         };
 
-        assert_eq!(property_definition.to_string(), "public readonly u32 $foo;");
+        assert_eq!(
+            uninitialized_property_definition.to_string(),
+            "public readonly u32 $foo;"
+        );
+
+        let initialized_property_definition = PropertyDefinition {
+            attributes: vec![],
+            modifiers: ModifierGroupDefinition {
+                position: 0,
+                modifiers: vec![
+                    ModifierDefinition::Public(Keyword::new(ByteString::from("public"), 0)),
+                    ModifierDefinition::Readonly(Keyword::new(ByteString::from("readonly"), 0)),
+                ],
+            },
+            type_definition: TypeDefinition::UnsignedInteger(UnsignedIntegerTypeDefinition::U8(
+                Keyword::new(ByteString::from("u8"), 7),
+            )),
+            entry: PropertyEntryDefinition::Initialized {
+                variable: Variable {
+                    position: 0,
+                    name: ByteString::from("bar"),
+                },
+                equals: 0,
+                value: Expression::Literal(Integer(LiteralInteger {
+                    comments: CommentGroup { comments: vec![] },
+                    position: 0,
+                    value: ByteString::from("123"),
+                })),
+            },
+            semicolon: 0,
+        };
+
+        assert_eq!(
+            initialized_property_definition.to_string(),
+            "public readonly u8 $bar = 123;"
+        );
     }
 }
