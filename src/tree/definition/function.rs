@@ -523,6 +523,8 @@ impl std::fmt::Display for FunctionDefinition {
 
 impl std::fmt::Display for MethodParameterDefinition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.modifiers)?;
+
         write!(f, "{} {}", self.type_definition, self.variable,)?;
 
         if let Some(default_value) = &self.default {
