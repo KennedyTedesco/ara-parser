@@ -62,6 +62,11 @@ pub trait Node: Any {
 
     /// The description of the node.
     fn get_description(&self) -> String;
+
+    /// Whether the node is describable.
+    fn is_describable(&self) -> bool {
+        true
+    }
 }
 
 pub fn downcast<T: Node + 'static>(node: &dyn Node) -> Option<&T> {
@@ -90,10 +95,15 @@ pub fn downcast<T: Node + 'static>(node: &dyn Node) -> Option<&T> {
 }
 
 pub fn describe(node: &dyn Node, indent: usize) -> String {
-    let mut description = format!("{}- {}\n", " ".repeat(indent * 2), node.get_description());
-    for child in node.describable_children() {
+    let mut description = String::new();
+    if node.is_describable() {
+        description += &format!("{}- {}\n", " ".repeat(indent * 2), node.get_description());
+    }
+
+    for child in node.children() {
         description += &describe(child, indent + 1);
     }
+
     description
 }
 
