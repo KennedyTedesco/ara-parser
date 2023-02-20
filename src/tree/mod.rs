@@ -60,6 +60,11 @@ pub trait Node: Any {
     /// This is used for traversing the tree.
     fn children(&self) -> Vec<&dyn Node>;
 
+    /// The describable children of the node.
+    ///
+    /// This is used for traversing the tree.
+    fn describable_children(&self) -> Vec<&dyn Node>;
+
     /// The description of the node.
     fn get_description(&self) -> String;
 }
@@ -87,4 +92,20 @@ pub fn downcast<T: Node + 'static>(node: &dyn Node) -> Option<&T> {
     } else {
         None
     }
+}
+
+pub fn describe(node: &dyn Node, indent: usize) -> String {
+    let mut description = format!("{}- {}\n", " ".repeat(indent * 2), node.get_description());
+    for child in node.describable_children() {
+        description += &describe(child, indent + 1);
+    }
+    description
+}
+
+pub fn describe_tree(tree: &Tree) -> String {
+    let mut description = String::new();
+    for definition in &tree.definitions.definitions {
+        description += &describe(definition, 0);
+    }
+    description
 }
