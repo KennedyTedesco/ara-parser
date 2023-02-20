@@ -60,11 +60,6 @@ pub trait Node: Any {
     /// This is used for traversing the tree.
     fn children(&self) -> Vec<&dyn Node>;
 
-    /// The describable children of the node.
-    ///
-    /// This is used for traversing the tree.
-    fn describable_children(&self) -> Vec<&dyn Node>;
-
     /// The description of the node.
     fn get_description(&self) -> String;
 }
