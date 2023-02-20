@@ -95,22 +95,25 @@ pub fn downcast<T: Node + 'static>(node: &dyn Node) -> Option<&T> {
 }
 
 pub fn describe(node: &dyn Node, indent: usize) -> String {
-    let mut description = String::new();
-    if node.is_describable() {
-        description += &format!("{}- {}\n", " ".repeat(indent * 2), node.get_description());
-    }
+    let description = if node.is_describable() {
+        format!("{}- {}\n", " ".repeat(indent * 2), node.get_description())
+    } else {
+        String::new()
+    };
 
-    for child in node.children() {
-        description += &describe(child, indent + 1);
-    }
+    let children_description = node
+        .children()
+        .iter()
+        .map(|child| describe(*child, indent + 1))
+        .collect::<String>();
 
-    description
+    format!("{}{}", description, children_description)
 }
 
 pub fn describe_tree(tree: &Tree) -> String {
-    let mut description = String::new();
-    for definition in &tree.definitions.definitions {
-        description += &describe(definition, 0);
-    }
-    description
+    tree.definitions
+        .definitions
+        .iter()
+        .map(|definition| describe(definition, 0))
+        .collect()
 }
