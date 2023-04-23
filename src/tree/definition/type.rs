@@ -184,6 +184,10 @@ impl Node for SignedIntegerTypeDefinition {
     fn get_description(&self) -> String {
         "signed integer type definition".to_string()
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
 
 impl Node for UnsignedIntegerTypeDefinition {
@@ -217,6 +221,10 @@ impl Node for UnsignedIntegerTypeDefinition {
     fn get_description(&self) -> String {
         "unsigned integer type definition".to_string()
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
 
 impl Node for FloatingPointTypeDefinition {
@@ -244,6 +252,10 @@ impl Node for FloatingPointTypeDefinition {
 
     fn get_description(&self) -> String {
         "floating point type definition".to_string()
+    }
+
+    fn is_describable(&self) -> bool {
+        false
     }
 }
 
@@ -378,6 +390,10 @@ impl Node for TypeDefinition {
             Self::Tuple { .. } => "tuple type definition".to_string(),
             Self::Parenthesized { .. } => "parenthesized type definition".to_string(),
         }
+    }
+
+    fn is_describable(&self) -> bool {
+        false
     }
 }
 

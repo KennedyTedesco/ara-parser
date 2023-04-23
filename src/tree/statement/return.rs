@@ -69,4 +69,8 @@ impl Node for ReturnStatement {
             Self::Implicit { .. } => "implicit return statement".to_string(),
         }
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }

@@ -98,6 +98,10 @@ impl Node for ArgumentExpression {
             Self::Named { .. } => "named argument expression".to_string(),
         }
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
 
 impl Node for ArgumentListExpression {

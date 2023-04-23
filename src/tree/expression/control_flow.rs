@@ -133,4 +133,8 @@ impl Node for MatchArmConditionExpression {
     fn get_description(&self) -> String {
         "match arm condition expression".to_string()
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }

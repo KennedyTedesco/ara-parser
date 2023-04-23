@@ -44,6 +44,10 @@ impl Node for AttributeGroupDefinition {
     fn get_description(&self) -> String {
         "attribute group definition".to_string()
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
 
 impl Node for AttributeDefinition {

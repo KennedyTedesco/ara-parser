@@ -117,4 +117,8 @@ impl Node for Definition {
             Self::Class(definition) => definition.get_description(),
         }
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }

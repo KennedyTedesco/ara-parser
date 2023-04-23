@@ -225,4 +225,8 @@ impl Node for ClassDefinitionMember {
             Self::Method(method) => method.get_description(),
         }
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }

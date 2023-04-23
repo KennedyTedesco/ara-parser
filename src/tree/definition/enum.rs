@@ -143,6 +143,10 @@ impl Node for EnumDefinition {
             Self::Unit(definition) => definition.get_description(),
         }
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
 
 impl Node for UnitEnumDefinition {
@@ -238,6 +242,10 @@ impl Node for UnitEnumBodyDefinition {
     fn get_description(&self) -> String {
         "unit enum body definition".to_string()
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
 
 impl Node for UnitEnumMemberDefinition {
@@ -271,6 +279,10 @@ impl Node for UnitEnumMemberDefinition {
             Self::Method(method) => method.get_description(),
             Self::Constant(constant) => constant.get_description(),
         }
+    }
+
+    fn is_describable(&self) -> bool {
+        false
     }
 }
 
@@ -359,6 +371,10 @@ impl Node for BackedEnumTypeDefinition {
 
     fn get_description(&self) -> String {
         "backed enum type definition".to_string()
+    }
+
+    fn is_describable(&self) -> bool {
+        false
     }
 }
 

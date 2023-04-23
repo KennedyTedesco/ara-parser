@@ -98,7 +98,7 @@ pub fn describe(node: &dyn Node, indent: usize) -> String {
     let description = if node.is_describable() {
         format!("{}- {}\n", " ".repeat(indent * 2), node.get_description())
     } else {
-        String::new()
+        String::default()
     };
 
     let children_description = node

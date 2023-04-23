@@ -120,6 +120,10 @@ impl Node for Literal {
             Literal::False(literal) => literal.get_description(),
         }
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
 
 impl Node for LiteralString {

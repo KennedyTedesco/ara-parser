@@ -414,6 +414,10 @@ impl Node for MethodBodyDefinition {
     fn get_description(&self) -> String {
         "method body definition".to_string()
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
 
 impl Node for MethodDefinition {

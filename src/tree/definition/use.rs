@@ -103,6 +103,10 @@ impl Node for UseDefinition {
             Self::Constant { .. } => "use constant definition".to_string(),
         }
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
 
 impl Node for UseDefinitionSymbolAlias {

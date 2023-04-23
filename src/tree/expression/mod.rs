@@ -426,4 +426,8 @@ impl Node for Expression {
             Self::FunctionalOperation(expression) => expression.get_description(),
         }
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }

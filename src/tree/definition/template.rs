@@ -100,6 +100,10 @@ impl Node for TemplateGroupDefinition {
     fn get_description(&self) -> String {
         "template group definition".to_string()
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
 
 impl Node for TypeTemplateGroupDefinition {

@@ -109,4 +109,8 @@ impl Node for PropertyEntryDefinition {
             Self::Initialized { .. } => "initialized property entry".to_string(),
         }
     }
+
+    fn is_describable(&self) -> bool {
+        false
+    }
 }
