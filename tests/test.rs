@@ -35,8 +35,8 @@ fn test_fixtures() -> io::Result<()> {
             continue;
         }
 
-        let source_map = loader.load(&code_filename).unwrap();
-        match parser::parse(&source_map.sources[0]) {
+        let mut source_map = loader.load(&code_filename).unwrap();
+        match parser::parse(&mut source_map.sources[0]) {
             Ok(tree) => {
                 let expected_tree = std::fs::read_to_string(&tree_filename)?;
 

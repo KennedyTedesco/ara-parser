@@ -11,10 +11,10 @@ pub struct State<'a> {
 }
 
 impl<'a> State<'a> {
-    pub fn new(source: &'a Source) -> Self {
+    pub fn new(source: &'a Source, content: &'a [u8]) -> Self {
         Self {
             source,
-            bytes: SourceBytes::new(source.content.as_bytes()),
+            bytes: SourceBytes::new(content),
         }
     }
 }

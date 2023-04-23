@@ -25,8 +25,8 @@ fn test_bincode() -> io::Result<()> {
         }
     "#;
 
-    let source = Source::inline(SourceKind::Script, code);
-    let tree = parser::parse(&source).unwrap();
+    let mut source = Source::inline(SourceKind::Script, code);
+    let tree = parser::parse(&mut source).unwrap();
 
     let config = bincode::config::standard();
     let encoded_tree = bincode::encode_to_vec(&tree, config).unwrap();

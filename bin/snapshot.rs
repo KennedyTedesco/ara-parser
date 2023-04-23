@@ -40,8 +40,8 @@ fn main() -> io::Result<()> {
             std::fs::remove_file(&error_filename)?;
         }
 
-        let source_map = loader.load(&code_filename).unwrap();
-        match parser::parse(&source_map.sources[0]) {
+        let mut source_map = loader.load(&code_filename).unwrap();
+        match parser::parse(&mut source_map.sources[0]) {
             Ok(tree) => {
                 std::fs::write(tree_filename, format!("{:#?}", tree.definitions))?;
                 println!(

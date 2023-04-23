@@ -18,11 +18,11 @@ pub(in crate::parser) mod macros;
 pub(in crate::parser) mod result;
 pub(in crate::parser) mod state;
 
-pub fn parse_map(map: &SourceMap) -> Result<TreeMap, Box<Report>> {
+pub fn parse_map(map: &mut SourceMap) -> Result<TreeMap, Box<Report>> {
     let mut trees = vec![];
     let mut reports = vec![];
 
-    for source in &map.sources {
+    for source in &mut map.sources {
         match parse(source) {
             Ok(tree) => trees.push(tree),
             Err(report) => reports.push(report),
@@ -46,7 +46,7 @@ pub fn parse_map(map: &SourceMap) -> Result<TreeMap, Box<Report>> {
     }
 }
 
-pub fn parse(source: &Source) -> Result<Tree, Box<Report>> {
+pub fn parse(source: &mut Source) -> Result<Tree, Box<Report>> {
     let tokens = match lexer::lex(source) {
         Ok(tokens) => tokens,
         Err(issue) => {

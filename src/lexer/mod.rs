@@ -16,8 +16,9 @@ pub(in crate::lexer) mod macros;
 pub(in crate::lexer) mod result;
 pub(in crate::lexer) mod state;
 
-pub fn lex(source: &Source) -> Result<Vec<Token>, Box<Issue>> {
-    let mut state = State::new(source);
+pub fn lex(source: &mut Source) -> Result<Vec<Token>, Box<Issue>> {
+    let content = source.content().map_err(|error| Box::new(error.into()))?;
+    let mut state = State::new(source, content.as_bytes());
     let mut tokens = Vec::new();
 
     while !state.bytes.eof() {

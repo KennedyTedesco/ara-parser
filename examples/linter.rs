@@ -48,9 +48,9 @@ fn main() -> Result<(), Error> {
 
     let loader = FileSourceLoader::new(&cargo_manifest_dir);
 
-    let source_map = loader.load(&"examples/project/format.ara").unwrap();
+    let mut source_map = loader.load(&"examples/project/format.ara").unwrap();
 
-    match parser::parse_map(&source_map) {
+    match parser::parse_map(&mut source_map) {
         Ok(tree_map) => {
             let mut traverser =
                 TreeTraverser::new(vec![Box::new(NoVariadicParameterRuleVisitor {})]);

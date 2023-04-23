@@ -9,8 +9,8 @@ use ara_source::source::Source;
 use ara_source::source::SourceKind;
 
 fn decode_benchmark(criterion: &mut Criterion) {
-    let source = Source::inline(SourceKind::Script, CODE_SAMPLE);
-    let tree = parser::parse(&source).unwrap();
+    let mut source = Source::inline(SourceKind::Script, CODE_SAMPLE);
+    let tree = parser::parse(&mut source).unwrap();
     let config = bincode::config::standard();
     let encoded_tree = bincode::encode_to_vec(&tree, config).unwrap();
 
@@ -24,7 +24,7 @@ fn decode_benchmark(criterion: &mut Criterion) {
             })
         })
         .bench_function("parse code", |bencher| {
-            bencher.iter(|| black_box(parser::parse(black_box(&source))))
+            bencher.iter(|| black_box(parser::parse(black_box(&mut source))))
         });
 }
 
